@@ -822,11 +822,11 @@ select.form-input{cursor:pointer}
 // ============================================================
 // SUPABASE CONFIG — replace with your values
 // ============================================================
-const SUPABASE_URL = 'https://kukcmdpxehmqunujisda.supabase.co';
+const SUPABASE_URL = 'https://kukcmdpxehmqunujisda.db.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1a2NtZHB4ZWhtcXVudWppc2RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwMzIxMzUsImV4cCI6MjA5NTYwODEzNX0.7UC-tFt-BZYanPnz6p9Vixd2kU7okH4V_UG8Q4zHxRU';
 const SUPABASE_CONFIGURED = SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY';
-const supabase = SUPABASE_CONFIGURED
-  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+const db = SUPABASE_CONFIGURED
+  ? window.db.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
   : null;
 
 // ============================================================
@@ -1515,7 +1515,7 @@ function saveTargets(){
 function resetData(){
   if(!confirm('Reset ALL data? This cannot be undone.')) return;
   if(SUPABASE_CONFIGURED && supabase){
-    supabase.from('dashboard_data').delete().eq('id',1).then(()=>location.reload());
+    db.from('dashboard_data').delete().eq('id',1).then(()=>location.reload());
   } else { location.reload(); }
 }
 
