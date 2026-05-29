@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,6 +6,8 @@
 <title>Lewin OS</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -24,6 +25,29 @@
 body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .app{display:flex;min-height:100vh}
 
+/* PASSCODE SCREEN */
+#auth-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:20px}
+.auth-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);padding:40px;text-align:center;max-width:340px;width:100%}
+.auth-logo{width:48px;height:48px;background:var(--accent);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;margin:0 auto 16px}
+.auth-title{font-size:20px;font-weight:600;margin-bottom:4px}
+.auth-sub{font-size:13px;color:var(--text2);margin-bottom:28px}
+.passcode-dots{display:flex;justify-content:center;gap:14px;margin-bottom:20px}
+.passcode-dot{width:14px;height:14px;border-radius:50%;background:var(--bg5);border:2px solid var(--border2);transition:all .15s}
+.passcode-dot.filled{background:var(--accent);border-color:var(--accent)}
+.passcode-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.pad-btn{background:var(--bg3);border:1px solid var(--border2);color:var(--text);border-radius:10px;padding:16px;font-size:18px;font-weight:500;cursor:pointer;font-family:'DM Mono',monospace;transition:all .15s}
+.pad-btn:hover{background:var(--bg4);border-color:var(--border2)}
+.pad-btn:active{transform:scale(.95)}
+.pad-btn.del{font-size:16px;color:var(--text2)}
+.passcode-error{font-size:12px;color:var(--red);margin-top:4px;min-height:18px;transition:opacity .2s}
+
+/* LOADING */
+#loading-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9998;flex-direction:column;gap:12px}
+.loading-spinner{width:28px;height:28px;border:3px solid var(--bg5);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.loading-text{font-size:13px;color:var(--text3)}
+
 /* SIDEBAR */
 .sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;transition:transform .25s}
 .logo{padding:20px 18px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
@@ -36,6 +60,16 @@ nav{flex:1;padding:10px 8px;overflow-y:auto}
 .nav-item.active{background:var(--accent-bg);color:var(--accent2)}
 .nav-item i{font-size:16px;width:18px;flex-shrink:0}
 .nav-section{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;padding:10px 10px 4px;font-weight:500}
+
+/* USER PROFILE IN SIDEBAR */
+.sidebar-user{padding:12px 14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.user-avatar{width:28px;height:28px;border-radius:50%;background:var(--accent-bg);border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--accent2);flex-shrink:0;overflow:hidden}
+.user-avatar img{width:100%;height:100%;object-fit:cover}
+.user-info{flex:1;min-width:0}
+.user-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-email{font-size:10px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn-signout{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:4px;display:flex;align-items:center;flex-shrink:0}
+.btn-signout:hover{color:var(--red)}
 
 /* MAIN */
 .main{margin-left:220px;flex:1;padding:28px 28px 80px;min-height:100vh;max-width:1200px}
@@ -223,6 +257,20 @@ select.form-input{cursor:pointer}
 .target-pct{font-weight:500}
 .target-sub{font-size:11px;color:var(--text3);margin-bottom:4px;display:flex;justify-content:space-between}
 
+/* SCREEN NETWORK CARD */
+.screen-network-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:18px;margin-bottom:14px}
+.screen-network-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.screen-network-title{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--text3);font-weight:500}
+.screen-network-fields{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;align-items:end}
+.sn-field label{font-size:11px;color:var(--text3);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+.sn-field input{background:var(--bg4);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:8px 12px;font-size:16px;font-weight:600;font-family:'DM Mono',monospace;width:100%;text-align:center}
+.sn-field input:focus{outline:none;border-color:var(--accent)}
+.sn-pct-display{text-align:center}
+.sn-pct-val{font-size:22px;font-weight:700;color:var(--accent2);font-family:'DM Mono',monospace}
+.sn-pct-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.sn-progress-bar{height:6px;background:var(--bg5);border-radius:6px;overflow:hidden}
+.sn-progress-fill{height:100%;border-radius:6px;background:var(--accent);transition:width .5s}
+
 /* MOBILE NAV */
 .mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);padding:8px 4px;z-index:100;justify-content:space-around}
 .mob-nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;color:var(--text3);font-size:10px;cursor:pointer;padding:4px 10px;border-radius:8px;font-family:'DM Sans',sans-serif;transition:all .15s}
@@ -252,6 +300,12 @@ select.form-input{cursor:pointer}
 .switch::after{content:'';position:absolute;width:18px;height:18px;background:#fff;border-radius:50%;top:2px;left:2px;transition:transform .2s}
 .switch.on::after{transform:translateX(20px)}
 
+/* SAVE INDICATOR */
+#save-indicator{position:fixed;bottom:90px;right:28px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:11px;color:var(--text3);opacity:0;transition:opacity .3s;z-index:999;display:flex;align-items:center;gap:6px}
+#save-indicator.show{opacity:1}
+#save-indicator.saved{color:var(--green)}
+#save-indicator.saving{color:var(--amber)}
+
 /* RESPONSIVE */
 @media(max-width:768px){
   .sidebar{transform:translateX(-100%)}
@@ -262,18 +316,56 @@ select.form-input{cursor:pointer}
   .mobile-nav{display:flex}
   .hamburger{display:block;position:fixed;top:14px;left:14px;z-index:200}
   .page-header{margin-top:36px}
+  .screen-network-fields{grid-template-columns:1fr 1fr;gap:8px}
 }
 @media(max-width:480px){
   .g3,.g4{grid-template-columns:1fr}
   .modal-type-grid{grid-template-columns:1fr 1fr}
+  .screen-network-fields{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
 <body>
 
+<!-- PASSCODE SCREEN -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">L</div>
+    <div class="auth-title">Lewin OS</div>
+    <div class="auth-sub">Enter your passcode to continue</div>
+    <div class="passcode-dots">
+      <div class="passcode-dot" id="dot-0"></div>
+      <div class="passcode-dot" id="dot-1"></div>
+      <div class="passcode-dot" id="dot-2"></div>
+      <div class="passcode-dot" id="dot-3"></div>
+    </div>
+    <div class="passcode-pad">
+      <button class="pad-btn" onclick="padPress('1')">1</button>
+      <button class="pad-btn" onclick="padPress('2')">2</button>
+      <button class="pad-btn" onclick="padPress('3')">3</button>
+      <button class="pad-btn" onclick="padPress('4')">4</button>
+      <button class="pad-btn" onclick="padPress('5')">5</button>
+      <button class="pad-btn" onclick="padPress('6')">6</button>
+      <button class="pad-btn" onclick="padPress('7')">7</button>
+      <button class="pad-btn" onclick="padPress('8')">8</button>
+      <button class="pad-btn" onclick="padPress('9')">9</button>
+      <button class="pad-btn" style="visibility:hidden" disabled></button>
+      <button class="pad-btn" onclick="padPress('0')">0</button>
+      <button class="pad-btn del" onclick="padDelete()"><i class="ti ti-backspace"></i></button>
+    </div>
+    <div class="passcode-error" id="passcode-error"></div>
+  </div>
+</div>
+
+<!-- LOADING SCREEN -->
+<div id="loading-screen" style="display:none">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Loading your OS...</div>
+</div>
+
 <button class="hamburger" id="hamburger" aria-label="Menu"><i class="ti ti-menu-2"></i></button>
 
-<div class="app">
+<div class="app" id="main-app" style="display:none">
 <aside class="sidebar" id="sidebar">
   <div class="logo">
     <div class="logo-icon">L</div>
@@ -298,6 +390,14 @@ select.form-input{cursor:pointer}
     <div class="nav-section">System</div>
     <button class="nav-item" data-page="settings"><i class="ti ti-settings"></i>Settings</button>
   </nav>
+  <div class="sidebar-user">
+    <div class="user-avatar" id="user-avatar">L</div>
+    <div class="user-info">
+      <div class="user-name">Lewin</div>
+      <div class="user-email">Personal OS</div>
+    </div>
+    <button class="btn-signout" onclick="lockDashboard()" title="Lock"><i class="ti ti-lock"></i></button>
+  </div>
 </aside>
 
 <main class="main">
@@ -376,6 +476,21 @@ select.form-input{cursor:pointer}
       <div class="stat-label">Current Weight</div>
       <div class="stat-val" id="home-weight">—</div>
       <div class="stat-sub">kg</div>
+    </div>
+  </div>
+
+  <div class="grid g2" style="margin-bottom:14px">
+    <!-- Screen Network card on home -->
+    <div class="stat-card">
+      <div class="stat-label">Screen Network</div>
+      <div class="stat-val" id="home-screens-count" style="font-size:24px;font-family:'DM Mono',monospace">— / —</div>
+      <div style="font-size:11px;color:var(--accent2);margin-top:4px" id="home-screens-pct">0% deployed</div>
+      <div class="progress-bar" style="margin-top:8px"><div class="progress-fill" id="home-screens-bar" style="width:0%"></div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Workout Streak</div>
+      <div class="stat-val" id="home-streak">0</div>
+      <div class="stat-sub">days</div>
     </div>
   </div>
 
@@ -496,6 +611,31 @@ select.form-input{cursor:pointer}
     <div class="page-title">Screens Business</div>
     <div class="page-sub">Track leads, installs & growth</div>
   </div>
+
+  <!-- SCREEN NETWORK GROWTH SECTION (Feature 1) -->
+  <div class="screen-network-card">
+    <div class="screen-network-header">
+      <div class="screen-network-title">Screen Network Growth</div>
+    </div>
+    <div class="screen-network-fields">
+      <div class="sn-field">
+        <label>Current Screens</label>
+        <input type="number" id="sn-current" min="0" placeholder="0" oninput="updateScreenNetwork()">
+      </div>
+      <div class="sn-field">
+        <label>Target Screens</label>
+        <input type="number" id="sn-target" min="1" placeholder="100" oninput="updateScreenNetwork()">
+      </div>
+      <div class="sn-pct-display">
+        <div class="sn-pct-val" id="sn-pct">0%</div>
+        <div class="sn-pct-label">Progress</div>
+      </div>
+    </div>
+    <div class="sn-progress-bar">
+      <div class="sn-progress-fill" id="sn-bar" style="width:0%"></div>
+    </div>
+  </div>
+
   <div class="grid g4" style="margin-bottom:14px">
     <div class="stat-card"><div class="stat-label">Total Leads</div><div class="stat-val" id="sc-leads">0</div></div>
     <div class="stat-card"><div class="stat-label">Meetings</div><div class="stat-val" id="sc-meetings">0</div></div>
@@ -675,8 +815,75 @@ select.form-input{cursor:pointer}
   </div>
 </div>
 
+<!-- SAVE INDICATOR -->
+<div id="save-indicator"><i class="ti ti-cloud-upload" style="font-size:13px"></i><span id="save-text">Saving...</span></div>
+
 <script>
+// ============================================================
+// SUPABASE CONFIG — replace with your values
+// ============================================================
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ============================================================
+// PASSCODE
+// ============================================================
+const PASSCODE = '5827';
+let padBuffer = '';
+
+function padPress(digit){
+  if(padBuffer.length >= 4) return;
+  padBuffer += digit;
+  updateDots();
+  if(padBuffer.length === 4) checkPasscode();
+}
+function padDelete(){
+  padBuffer = padBuffer.slice(0,-1);
+  updateDots();
+  document.getElementById('passcode-error').textContent = '';
+}
+function updateDots(){
+  for(let i=0;i<4;i++){
+    document.getElementById('dot-'+i).classList.toggle('filled', i < padBuffer.length);
+  }
+}
+function checkPasscode(){
+  if(padBuffer === PASSCODE){
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('loading-screen').style.display = 'flex';
+    loadFromSupabase().then(()=>{
+      document.getElementById('loading-screen').style.display = 'none';
+      document.getElementById('main-app').style.display = 'flex';
+      initHome(); renderFocus(); renderPriorities(); updateHomeStats(); renderSettings(); loadScreenNetworkInputs();
+      document.getElementById('nav-trading').style.display = state.settings.trading?'flex':'none';
+    });
+  } else {
+    document.getElementById('passcode-error').textContent = 'Incorrect passcode. Try again.';
+    padBuffer = '';
+    updateDots();
+    const card = document.querySelector('.auth-card');
+    card.style.animation = 'shake .3s ease';
+    setTimeout(()=>card.style.animation='', 350);
+  }
+}
+function lockDashboard(){
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'flex';
+  padBuffer = ''; updateDots();
+  document.getElementById('passcode-error').textContent = '';
+}
+
+// Keyboard support on passcode screen
+document.addEventListener('keydown', e=>{
+  if(document.getElementById('auth-screen').style.display==='none') return;
+  if(e.key>='0' && e.key<='9') padPress(e.key);
+  if(e.key==='Backspace') padDelete();
+});
+
+// ============================================================
 // STATE
+// ============================================================
 let state = {
   focus: null,
   priorities: [],
@@ -694,16 +901,86 @@ let state = {
   journal: [],
   weightLog: [],
   measurements: {},
-  settings: {trading:false,screens:true}
+  settings: {trading:false,screens:true},
+  screenNetwork: {current:0,target:100}
 };
 
-function load(){
-  const saved = localStorage.getItem('lewin-os-v2');
-  if(saved){ try{ state = {...state,...JSON.parse(saved)}; }catch(e){} }
+// ============================================================
+// SAVE INDICATOR
+// ============================================================
+let saveTimer = null;
+function showSaving(){
+  const el=document.getElementById('save-indicator');
+  const txt=document.getElementById('save-text');
+  el.className='show saving'; txt.textContent='Saving...';
 }
-function save(){ localStorage.setItem('lewin-os-v2', JSON.stringify(state)); }
+function showSaved(){
+  const el=document.getElementById('save-indicator');
+  const txt=document.getElementById('save-text');
+  el.className='show saved'; txt.textContent='Saved';
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{ el.className=''; },2000);
+}
 
+// ============================================================
+// SUPABASE DATA — single-row (id = 1)
+// ============================================================
+async function loadFromSupabase(){
+  try {
+    const {data, error} = await supabase
+      .from('dashboard_data')
+      .select('data')
+      .eq('id', 1)
+      .maybeSingle();
+    if(data && data.data){
+      state = deepMerge(state, data.data);
+    }
+  } catch(e){ console.error('Load error', e); }
+}
+
+async function saveToSupabase(){
+  showSaving();
+  const {error} = await supabase
+    .from('dashboard_data')
+    .upsert({id: 1, data: state, updated_at: new Date().toISOString()},
+            {onConflict: 'id'});
+  if(!error) showSaved();
+  else console.error('Save error', error);
+}
+
+// Debounced auto-save
+let autoSaveTimer = null;
+function save(){
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(saveToSupabase, 800);
+}
+
+function deepMerge(target, source){
+  const output = Object.assign({}, target);
+  if(isObject(target) && isObject(source)){
+    Object.keys(source).forEach(key=>{
+      if(isObject(source[key])){
+        if(!(key in target)) Object.assign(output,{[key]:source[key]});
+        else output[key]=deepMerge(target[key],source[key]);
+      } else { Object.assign(output,{[key]:source[key]}); }
+    });
+  }
+  return output;
+}
+function isObject(item){ return item&&typeof item==='object'&&!Array.isArray(item); }
+
+// ============================================================
+// BOOT — show passcode screen on load
+// ============================================================
+function boot(){
+  document.getElementById('auth-screen').style.display = 'flex';
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'none';
+}
+
+// ============================================================
 // NAVIGATION
+// ============================================================
 function nav(page){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item,[data-page]').forEach(b=>b.classList.remove('active'));
@@ -721,39 +998,45 @@ document.getElementById('hamburger').addEventListener('click',()=>{
   document.getElementById('sidebar').classList.toggle('open');
 });
 
+// ============================================================
 // DATE/GREETING
+// ============================================================
 function initHome(){
-  const now = new Date();
-  const h = now.getHours();
-  let g = h<12?'Good morning':h<17?'Good afternoon':'Good evening';
-  document.getElementById('greeting').textContent = g;
-  document.getElementById('today-date').textContent = now.toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  document.getElementById('journal-today-date').textContent = now.toLocaleDateString('en-IN',{month:'short',day:'numeric',year:'numeric'});
+  const now=new Date();
+  const h=now.getHours();
+  let g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  document.getElementById('greeting').textContent=g;
+  document.getElementById('today-date').textContent=now.toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('journal-today-date').textContent=now.toLocaleDateString('en-IN',{month:'short',day:'numeric',year:'numeric'});
 }
 
+// ============================================================
 // FOCUS
-const FOCUS_ITEMS = ['Productivity','Wealth','CS Executive','Screens Business','Physique','Content Creation','Trading'];
+// ============================================================
+const FOCUS_ITEMS=['Productivity','Wealth','CS Executive','Screens Business','Physique','Content Creation','Trading'];
 function renderFocus(){
-  const g = document.getElementById('focus-grid');
-  g.innerHTML = FOCUS_ITEMS.map(f=>`<button class="focus-btn${state.focus===f?' selected':''}" onclick="setFocus('${f}')">${f}</button>`).join('');
+  const g=document.getElementById('focus-grid');
+  g.innerHTML=FOCUS_ITEMS.map(f=>`<button class="focus-btn${state.focus===f?' selected':''}" onclick="setFocus('${f}')">${f}</button>`).join('');
 }
-function setFocus(f){ state.focus = f; save(); renderFocus(); }
+function setFocus(f){ state.focus=f; save(); renderFocus(); }
 
+// ============================================================
 // PRIORITIES
+// ============================================================
 function renderPriorities(){
-  const list = document.getElementById('priority-list');
-  const area = document.getElementById('priority-add-area');
-  list.innerHTML = state.priorities.length?state.priorities.map((p,i)=>`
+  const list=document.getElementById('priority-list');
+  const area=document.getElementById('priority-add-area');
+  list.innerHTML=state.priorities.length?state.priorities.map((p,i)=>`
     <div class="priority-item">
       <div class="priority-dot dot-${p.level}"></div>
       <span class="priority-text">${p.text}</span>
       <button class="priority-del" onclick="delPriority(${i})"><i class="ti ti-x" style="font-size:12px"></i></button>
     </div>`).join(''):'<div style="font-size:12px;color:var(--text3);padding:6px 0">No priorities yet</div>';
-  if(area) area.style.display = state.priorities.length>=3?'none':'flex';
+  if(area) area.style.display=state.priorities.length>=3?'none':'flex';
 }
 function addPriority(){
-  const inp = document.getElementById('pri-input');
-  const lvl = document.getElementById('pri-level').value;
+  const inp=document.getElementById('pri-input');
+  const lvl=document.getElementById('pri-level').value;
   if(!inp.value.trim()) return;
   if(state.priorities.length>=3) return;
   state.priorities.push({text:inp.value.trim(),level:lvl});
@@ -762,18 +1045,20 @@ function addPriority(){
 function delPriority(i){ state.priorities.splice(i,1); save(); renderPriorities(); }
 document.getElementById('pri-input').addEventListener('keydown',e=>{ if(e.key==='Enter') addPriority(); });
 
+// ============================================================
 // CHECKIN
+// ============================================================
 function toggleWorkout(){
-  const btn = document.getElementById('ci-workout-btn');
-  const txt = document.getElementById('ci-workout-text');
-  const isOn = btn.classList.contains('active');
+  const btn=document.getElementById('ci-workout-btn');
+  const txt=document.getElementById('ci-workout-text');
+  const isOn=btn.classList.contains('active');
   btn.classList.toggle('active');
-  btn.querySelector('i').className = isOn?'ti ti-x':'ti ti-check';
-  txt.textContent = isOn?'No':'Yes';
+  btn.querySelector('i').className=isOn?'ti ti-x':'ti ti-check';
+  txt.textContent=isOn?'No':'Yes';
 }
 function saveCheckin(){
-  const today = new Date().toISOString().split('T')[0];
-  const ci = {
+  const today=new Date().toISOString().split('T')[0];
+  const ci={
     date:today,
     sleep:parseFloat(document.getElementById('ci-sleep').value)||0,
     deepwork:parseFloat(document.getElementById('ci-deepwork').value)||0,
@@ -781,14 +1066,16 @@ function saveCheckin(){
     workout:document.getElementById('ci-workout-btn').classList.contains('active'),
     mood:parseInt(document.getElementById('ci-mood').value)||0
   };
-  const idx = state.checkins.findIndex(c=>c.date===today);
+  const idx=state.checkins.findIndex(c=>c.date===today);
   if(idx>=0) state.checkins[idx]=ci; else state.checkins.push(ci);
   save();
   updateHomeStats();
   alert('Check-in saved!');
 }
 
+// ============================================================
 // STATS
+// ============================================================
 function avg(arr){ return arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:0; }
 function getLast7(){
   const days=[]; const now=new Date();
@@ -796,65 +1083,75 @@ function getLast7(){
   return days.map(d=>state.checkins.find(c=>c.date===d)||null);
 }
 function updateHomeStats(){
-  const last7 = getLast7();
-  const valid = last7.filter(Boolean);
-  // prod score = avg(deepwork/8*50 + sleep/8*25 + (workout?25:0))
-  const scores = valid.map(c=>Math.min(100,Math.round(c.deepwork/8*50+c.sleep/8*25+(c.workout?25:0))));
-  const prodScore = scores.length?Math.round(avg(scores)):null;
-  document.getElementById('home-prodscore').textContent = prodScore!==null?prodScore+'%':'—';
-  // Snapshot
-  const workoutDays = valid.filter(c=>c.workout).length;
-  const avgSleep = valid.length?avg(valid.map(c=>c.sleep)):0;
-  const totalStudy = valid.reduce((s,c)=>s+(c.study||0),0);
-  document.getElementById('snap-prod').textContent = prodScore!==null?prodScore+'%':'—';
-  document.getElementById('snap-workout').textContent = workoutDays+'/7 days';
-  document.getElementById('snap-sleep').textContent = avgSleep?avgSleep.toFixed(1)+' hrs':'—';
-  document.getElementById('snap-study').textContent = totalStudy?totalStudy.toFixed(1)+' hrs':'—';
-  // Weight
-  const lastW = state.weightLog[state.weightLog.length-1];
-  document.getElementById('home-weight').textContent = lastW?lastW.weight+'':'—';
-  // NW
-  const nw = calcNW();
-  document.getElementById('home-nw').textContent = '₹'+nw.toLocaleString('en-IN');
-  // CS
-  const pct = calcCSPct();
-  document.getElementById('home-cs').textContent = pct+'%';
-  // Activity
+  const last7=getLast7();
+  const valid=last7.filter(Boolean);
+  const scores=valid.map(c=>Math.min(100,Math.round(c.deepwork/8*50+c.sleep/8*25+(c.workout?25:0))));
+  const prodScore=scores.length?Math.round(avg(scores)):null;
+  document.getElementById('home-prodscore').textContent=prodScore!==null?prodScore+'%':'—';
+  const workoutDays=valid.filter(c=>c.workout).length;
+  const avgSleep=valid.length?avg(valid.map(c=>c.sleep)):0;
+  const totalStudy=valid.reduce((s,c)=>s+(c.study||0),0);
+  document.getElementById('snap-prod').textContent=prodScore!==null?prodScore+'%':'—';
+  document.getElementById('snap-workout').textContent=workoutDays+'/7 days';
+  document.getElementById('snap-sleep').textContent=avgSleep?avgSleep.toFixed(1)+' hrs':'—';
+  document.getElementById('snap-study').textContent=totalStudy?totalStudy.toFixed(1)+' hrs':'—';
+  const lastW=state.weightLog[state.weightLog.length-1];
+  document.getElementById('home-weight').textContent=lastW?lastW.weight+'':'—';
+  const nw=calcNW();
+  document.getElementById('home-nw').textContent='₹'+nw.toLocaleString('en-IN');
+  const pct=calcCSPct();
+  document.getElementById('home-cs').textContent=pct+'%';
+  // Screen Network home card
+  const sn=state.screenNetwork||{current:0,target:100};
+  const snPct=sn.target>0?Math.min(100,Math.round(sn.current/sn.target*100)):0;
+  document.getElementById('home-screens-count').textContent=`${sn.current} / ${sn.target}`;
+  document.getElementById('home-screens-pct').textContent=`${snPct}% deployed`;
+  document.getElementById('home-screens-bar').style.width=snPct+'%';
+  // Workout streak on home
+  let streak=0;
+  for(let i=state.checkins.length-1;i>=0;i--){
+    if(state.checkins[i].workout) streak++; else break;
+  }
+  document.getElementById('home-streak').textContent=streak;
   renderActivity();
 }
 function calcNW(){
-  const a = state.wealth.assets;
-  const l = state.wealth.liabilities;
-  return (a.cash+a.emergency+a.mutualFunds+a.stocks+a.tradingCapital+a.businessCapital+(a.otherAssets||0))
-       - (l.loans+(l.otherLiabilities||0));
+  const a=state.wealth.assets;
+  const l=state.wealth.liabilities;
+  return(a.cash+a.emergency+a.mutualFunds+a.stocks+a.tradingCapital+a.businessCapital+(a.otherAssets||0))
+       -(l.loans+(l.otherLiabilities||0));
 }
 function calcCSPct(){
   if(!state.subjects.length) return 0;
-  const done = state.subjects.reduce((s,sub)=>s+sub.done,0);
-  const total = state.subjects.reduce((s,sub)=>s+sub.total,0);
+  const done=state.subjects.reduce((s,sub)=>s+sub.done,0);
+  const total=state.subjects.reduce((s,sub)=>s+sub.total,0);
   return total?Math.round(done/total*100):0;
 }
 
+// ============================================================
 // ACTIVITY
+// ============================================================
 function renderActivity(){
-  const items = [];
+  const items=[];
   if(state.priorities[0]) items.push({icon:'act-task',i:'ti-checkbox',title:state.priorities[0].text,time:'Priority',t:Date.now()});
   if(state.content[0]) items.push({icon:'act-content',i:'ti-bulb',title:state.content[0].title,time:'Content idea',t:Date.now()-1});
   if(state.journal[0]) items.push({icon:'act-journal',i:'ti-notebook',title:'Journal: '+state.journal[0].date,time:'Journal entry',t:Date.now()-2});
   if(state.leads[0]) items.push({icon:'act-task',i:'ti-building-store',title:state.leads[0].name,time:'Business lead',t:Date.now()-3});
   if(state.trades[0]) items.push({icon:'act-wealth',i:'ti-trending-up',title:state.trades[0].asset,time:'Trade',t:Date.now()-4});
-  const el = document.getElementById('recent-activity');
-  el.innerHTML = items.length?items.map(it=>`
+  const el=document.getElementById('recent-activity');
+  el.innerHTML=items.length?items.slice(0,4).map(it=>`
     <div class="activity-item">
       <div class="activity-icon ${it.icon}"><i class="ti ${it.i}" style="font-size:13px"></i></div>
       <div class="activity-body">
         <div class="activity-title">${it.title}</div>
         <div class="activity-time">${it.time}</div>
       </div>
-    </div>`).join(''):'<div class="empty-state"><div class="empty-icon"><i class="ti ti-history"></i></div>No activity yet</div>';
+    </div>`).join(''):'<div class="empty-state" style="padding:16px 0">No activity yet</div>';
 }
 
+// ============================================================
 // PRODUCTIVITY PAGE
+// ============================================================
 function renderProductivity(){
   const last7=getLast7(); const valid=last7.filter(Boolean);
   const avgDW=valid.length?avg(valid.map(c=>c.deepwork)):0;
@@ -865,9 +1162,9 @@ function renderProductivity(){
   document.getElementById('prod-mood').textContent=avgMd?avgMd.toFixed(1):'—';
   renderMiniChart('chart-deepwork','chart-deepwork-labels',last7.map(c=>c?c.deepwork:0),8,'accent');
   renderMiniChart('chart-sleep','chart-sleep-labels',last7.map(c=>c?c.sleep:0),10,'green');
-  const hist = document.getElementById('prod-history');
-  const recent = [...state.checkins].reverse().slice(0,7);
-  hist.innerHTML = recent.length?recent.map(c=>`
+  const hist=document.getElementById('prod-history');
+  const recent=[...state.checkins].reverse().slice(0,7);
+  hist.innerHTML=recent.length?recent.map(c=>`
     <div class="checkin-row">
       <span class="checkin-label">${c.date}</span>
       <span style="font-size:12px;color:var(--text2)">💤 ${c.sleep}h  🧠 ${c.deepwork}h  📚 ${c.study}h  ${c.workout?'✅':'❌'}  😊 ${c.mood}/10</span>
@@ -878,15 +1175,16 @@ function renderMiniChart(id,labelsId,vals,max,cls){
   const el=document.getElementById(id); const lel=document.getElementById(labelsId);
   if(!el) return;
   const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const now=new Date(); const today=now.getDay();
+  const now=new Date();
   const labels=[]; for(let i=6;i>=0;i--){const d=new Date(now);d.setDate(d.getDate()-i);labels.push(days[d.getDay()]);}
-  el.innerHTML=vals.map((v,i)=>`<div class="mini-bar ${cls}" style="height:${Math.max(4,Math.round(v/max*100))}%;background:${v>0?'var(--'+cls+'  )':'var(--bg5)'}"></div>`).join('');
-  // fix color
+  el.innerHTML=vals.map((v,i)=>`<div class="mini-bar ${cls}" style="height:${Math.max(4,Math.round(v/max*100))}%"></div>`).join('');
   el.querySelectorAll('.mini-bar').forEach((b,i)=>{ if(vals[i]<=0) b.style.background='var(--bg5)'; else b.style.background=cls==='green'?'var(--green)':cls==='amber'?'var(--amber)':'var(--accent)'; });
   if(lel) lel.innerHTML=labels.map(l=>`<span>${l}</span>`).join('');
 }
 
+// ============================================================
 // WEALTH PAGE
+// ============================================================
 const ASSET_LABELS={cash:'Cash',emergency:'Emergency Fund',mutualFunds:'Mutual Funds',stocks:'Stocks',tradingCapital:'Trading Capital',businessCapital:'Business Capital',otherAssets:'Other Assets'};
 const LIAB_LABELS={loans:'Loans',otherLiabilities:'Other Liabilities'};
 function renderWealth(){
@@ -908,7 +1206,6 @@ function renderWealth(){
   const nw=assetTotal-liabTotal;
   document.getElementById('nw-total').textContent='₹'+nw.toLocaleString('en-IN');
   document.getElementById('nw-total').style.color=nw>=0?'var(--green)':'var(--red)';
-  // targets
   const t=state.targets;
   const targetsList=document.getElementById('targets-list');
   const items=[
@@ -925,7 +1222,6 @@ function renderWealth(){
       <div class="progress-bar"><div class="progress-fill${pct>=100?' green':pct>=50?' amber':''}" style="width:${pct}%"></div></div>
     </div>`;
   }).join('');
-  // expenses
   if(state.wealth.monthlyExpenses){
     document.getElementById('monthly-expenses').value=state.wealth.monthlyExpenses;
     calcRunway();
@@ -946,7 +1242,9 @@ function calcRunway(){
 }
 function openEditTargets(){ nav('settings'); }
 
+// ============================================================
 // CS PAGE
+// ============================================================
 function renderCS(){
   const pct=calcCSPct();
   document.getElementById('cs-overall-pct').textContent=pct+'%';
@@ -997,7 +1295,39 @@ function saveSubject(){
   save(); closeModalDirect(); renderCS(); updateHomeStats();
 }
 
-// SCREENS
+// ============================================================
+// SCREEN NETWORK (Feature 1)
+// ============================================================
+function loadScreenNetworkInputs(){
+  const sn=state.screenNetwork||{current:0,target:100};
+  const cur=document.getElementById('sn-current');
+  const tgt=document.getElementById('sn-target');
+  if(cur) cur.value=sn.current||0;
+  if(tgt) tgt.value=sn.target||100;
+  renderScreenNetworkUI();
+}
+
+function updateScreenNetwork(){
+  const cur=parseInt(document.getElementById('sn-current').value)||0;
+  const tgt=parseInt(document.getElementById('sn-target').value)||1;
+  state.screenNetwork={current:cur,target:tgt};
+  renderScreenNetworkUI();
+  updateHomeStats();
+  save();
+}
+
+function renderScreenNetworkUI(){
+  const sn=state.screenNetwork||{current:0,target:100};
+  const pct=sn.target>0?Math.min(100,Math.round(sn.current/sn.target*100)):0;
+  const pctEl=document.getElementById('sn-pct');
+  const barEl=document.getElementById('sn-bar');
+  if(pctEl) pctEl.textContent=pct+'%';
+  if(barEl) barEl.style.width=pct+'%';
+}
+
+// ============================================================
+// SCREENS PAGE
+// ============================================================
 function renderScreens(){
   document.getElementById('sc-leads').textContent=state.leads.length;
   document.getElementById('sc-meetings').textContent=state.leads.filter(l=>l.status==='Meeting').length;
@@ -1014,10 +1344,13 @@ function renderScreens(){
       </div>
       <button onclick="deleteLead(${i})" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;display:flex;align-items:center"><i class="ti ti-trash"></i></button>
     </div>`).join(''):'<div class="empty-state"><div class="empty-icon"><i class="ti ti-building-store"></i></div>No leads yet</div>';
+  loadScreenNetworkInputs();
 }
 function deleteLead(i){ state.leads.splice(i,1); save(); renderScreens(); }
 
+// ============================================================
 // PHYSIQUE
+// ============================================================
 function logWeight(){
   const w=parseFloat(document.getElementById('weight-input').value);
   if(!w) return;
@@ -1038,7 +1371,6 @@ function saveMeasurements(){
 function renderPhysique(){
   const lastW=state.weightLog[state.weightLog.length-1];
   document.getElementById('phy-weight').textContent=lastW?lastW.weight+'':'—';
-  // streak
   let streak=0; const now=new Date();
   for(let i=0;i<state.checkins.length;i++){
     const c=state.checkins[state.checkins.length-1-i];
@@ -1058,13 +1390,14 @@ function renderPhysique(){
     chart.innerHTML=wVals.map(w=>`<div class="mini-bar amber" style="height:${Math.max(10,Math.round((w.weight-mn)/range*80+10))}%"></div>`).join('');
     document.getElementById('chart-weight-labels').innerHTML=labels.map(l=>`<span>${l}</span>`).join('');
   } else { chart.innerHTML='<div style="font-size:12px;color:var(--text3);padding-bottom:10px">No data yet</div>'; }
-  // measurements
   if(state.measurements.chest) document.getElementById('meas-chest').value=state.measurements.chest||'';
   if(state.measurements.waist) document.getElementById('meas-waist').value=state.measurements.waist||'';
   if(state.measurements.arms) document.getElementById('meas-arms').value=state.measurements.arms||'';
 }
 
+// ============================================================
 // CONTENT VAULT
+// ============================================================
 let contentFilter='all';
 function renderContent(){
   const search=document.getElementById('content-search').value.toLowerCase();
@@ -1096,7 +1429,9 @@ document.getElementById('content-filters').querySelectorAll('.filter-pill').forE
   });
 });
 
+// ============================================================
 // TRADING
+// ============================================================
 function renderTrading(){
   document.getElementById('trade-total').textContent=state.trades.length;
   const wins=state.trades.filter(t=>t.result==='Win').length;
@@ -1117,7 +1452,9 @@ function renderTrading(){
 }
 function deleteTrade(i){ state.trades.splice(i,1); save(); renderTrading(); }
 
+// ============================================================
 // JOURNAL
+// ============================================================
 function renderJournal(){
   const list=document.getElementById('journal-list');
   list.innerHTML=[...state.journal].reverse().map(j=>`
@@ -1146,7 +1483,9 @@ function saveJournal(){
   alert('Journal entry saved!');
 }
 
+// ============================================================
 // SETTINGS
+// ============================================================
 function renderSettings(){
   const t=state.targets;
   document.getElementById('target-edit-list').innerHTML=
@@ -1170,11 +1509,12 @@ function saveTargets(){
 }
 function resetData(){
   if(!confirm('Reset ALL data? This cannot be undone.')) return;
-  localStorage.removeItem('lewin-os-v2');
-  location.reload();
+  supabase.from('dashboard_data').delete().eq('id',1).then(()=>location.reload());
 }
 
+// ============================================================
 // QUICK ADD MODAL
+// ============================================================
 function openQuickAdd(){
   document.getElementById('modal-title').textContent='Quick Add';
   document.getElementById('modal-body').innerHTML=`
@@ -1281,18 +1621,12 @@ function renderPage(p){
   if(p==='physique') renderPhysique();
   if(p==='content') renderContent();
   if(p==='trading') renderTrading();
-  if(p==='journal') renderJournal(); initHome();
+  if(p==='journal'){ renderJournal(); initHome(); }
   if(p==='settings') renderSettings();
 }
 
-// INIT
-load();
-initHome();
-renderFocus();
-renderPriorities();
-updateHomeStats();
-renderSettings();
-document.getElementById('nav-trading').style.display=state.settings.trading?'flex':'none';
+// BOOT
+boot();
 </script>
 </body>
 </html>
