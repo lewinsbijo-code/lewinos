@@ -822,9 +822,12 @@ select.form-input{cursor:pointer}
 // ============================================================
 // SUPABASE CONFIG — replace with your values
 // ============================================================
-const SUPABASE_URL = 'https://kukcmdpxehmqunujisda.supabase.co';
+const SUPABASE_URL = 'https://kukcmdpxehmqunujisda.supabase.co/rest/v1/';
 const SUPABASE_ANON_KEY = 'sb_publishable_VljHKn5UK2B2kkCQFbLZ1A_nE8oLV2F';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_CONFIGURED = SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY';
+const supabase = SUPABASE_CONFIGURED
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
 
 // ============================================================
 // PASSCODE
@@ -926,6 +929,7 @@ function showSaved(){
 // SUPABASE DATA — single-row (id = 1)
 // ============================================================
 async function loadFromSupabase(){
+  if(!SUPABASE_CONFIGURED || !supabase){ console.warn('Supabase not configured — running in local mode.'); return; }
   try {
     const {data, error} = await supabase
       .from('dashboard_data')
@@ -939,6 +943,7 @@ async function loadFromSupabase(){
 }
 
 async function saveToSupabase(){
+  if(!SUPABASE_CONFIGURED || !supabase){ showSaved(); return; }
   showSaving();
   const {error} = await supabase
     .from('dashboard_data')
@@ -1509,7 +1514,9 @@ function saveTargets(){
 }
 function resetData(){
   if(!confirm('Reset ALL data? This cannot be undone.')) return;
-  supabase.from('dashboard_data').delete().eq('id',1).then(()=>location.reload());
+  if(SUPABASE_CONFIGURED && supabase){
+    supabase.from('dashboard_data').delete().eq('id',1).then(()=>location.reload());
+  } else { location.reload(); }
 }
 
 // ============================================================
