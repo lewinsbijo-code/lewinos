@@ -4,1033 +4,900 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LewinOS</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#05070a;--bg2:#0a0e14;--bg3:#0f1520;--bg4:#141d28;
-  --border:#1a2535;--border2:#243042;
-  --text:#ffffff;--text2:#c8d4e0;--text3:#6b7f94;
-  --accent:#3b82f6;--accent2:#2563eb;--accent-dim:#0c1a35;
-  --green:#22c55e;--green-dim:#051a0e;
-  --amber:#f59e0b;--amber-dim:#1c1200;
-  --red:#ef4444;--red-dim:#1c0505;
-  --purple:#a855f7;--purple-dim:#150828;
-  --cyan:#06b6d4;--cyan-dim:#021218;
-  --radius:8px;--radius-lg:14px;--radius-xl:20px;
+  --bg:#0c0c0c;
+  --surface:#141414;
+  --surface2:#1a1a1a;
+  --surface3:#202020;
+  --border:#2a2a2a;
+  --border2:#333;
+  --text:#f0f0f0;
+  --text2:#888;
+  --text3:#555;
+  --gold:#c9a96e;
+  --gold-dim:#1a1408;
+  --green:#4ade80;
+  --green-dim:#0a1f12;
+  --red:#f87171;
+  --red-dim:#1f0a0a;
+  --blue:#60a5fa;
+  --blue-dim:#0a1220;
+  --amber:#fbbf24;
+  --r:6px;--rl:10px;
 }
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;overflow-x:hidden}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;-webkit-font-smoothing:antialiased}
 #app{min-height:100vh;display:flex;flex-direction:column}
-::-webkit-scrollbar{width:3px;height:3px}
-::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+::placeholder{color:var(--text3)}
 
-/* LOGIN */
-#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg)}
-.login-box{width:380px;padding:44px;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-xl)}
-.login-logo{font-size:32px;font-weight:900;color:#fff;letter-spacing:-1.5px;margin-bottom:4px}
-.login-logo span{color:var(--accent)}
-.login-sub{font-size:11px;color:var(--text3);margin-bottom:36px;letter-spacing:2px;text-transform:uppercase}
-.login-label{font-size:11px;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:7px;display:block;font-weight:600}
-.login-input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:13px 15px;color:#fff;font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;margin-bottom:18px}
-.login-input:focus{border-color:var(--accent)}
-.login-check{display:flex;align-items:center;gap:8px;margin-bottom:28px;cursor:pointer;font-size:13px;color:var(--text2)}
-.login-check input{width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
-.login-btn{width:100%;background:var(--accent);border:none;border-radius:var(--radius);padding:14px;color:#fff;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:0.3px;transition:background 0.2s}
-.login-btn:hover{background:var(--accent2)}
-.login-error{color:var(--red);font-size:12px;margin-bottom:14px;display:none;padding:10px 14px;background:var(--red-dim);border:1px solid var(--red);border-radius:var(--radius)}
+/* ── LOGIN ── */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg)}
+.login-wrap{width:320px}
+.login-mark{font-size:13px;font-weight:500;color:var(--text3);letter-spacing:3px;text-transform:uppercase;margin-bottom:40px}
+.login-mark span{color:var(--gold)}
+.login-title{font-size:28px;font-weight:300;color:var(--text);letter-spacing:-0.5px;margin-bottom:8px;line-height:1.2}
+.login-title strong{font-weight:600}
+.login-sub{font-size:13px;color:var(--text3);margin-bottom:40px}
+.login-field{margin-bottom:16px}
+.login-field input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.login-field input:focus{border-color:var(--gold)}
+.login-remember{display:flex;align-items:center;gap:8px;margin-bottom:28px;font-size:13px;color:var(--text3);cursor:pointer}
+.login-remember input{accent-color:var(--gold);width:14px;height:14px}
+.login-btn{width:100%;background:var(--gold);border:none;border-radius:var(--r);padding:14px;color:#0c0c0c;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:0.5px;transition:opacity .2s}
+.login-btn:hover{opacity:.88}
+.login-err{font-size:12px;color:var(--red);margin-bottom:16px;display:none}
 
-/* TOPBAR */
-#topbar{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:56px;background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
-.topbar-left{display:flex;align-items:center;gap:24px}
-.logo{font-size:20px;font-weight:900;color:#fff;letter-spacing:-0.8px;cursor:pointer}
-.logo span{color:var(--accent)}
-.topbar-status{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3);letter-spacing:0.5px}
-.status-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green)}
-.topbar-right{display:flex;align-items:center;gap:10px}
-.sync-btn{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:7px 14px;color:var(--text2);font-family:'Inter',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s}
-.sync-btn:hover{border-color:var(--accent);color:var(--accent)}
-.logout-btn{background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;transition:color 0.2s;font-family:'Inter',sans-serif;font-weight:500}
-.logout-btn:hover{color:var(--red)}
+/* ── SHELL ── */
+#topbar{height:52px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:99}
+.t-logo{font-size:15px;font-weight:600;color:var(--text);cursor:pointer;letter-spacing:-0.3px}
+.t-logo em{font-style:normal;color:var(--gold)}
+.t-right{display:flex;align-items:center;gap:20px}
+.t-sync{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text3)}
+.t-dot{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0}
+.t-btn{background:none;border:none;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text3);cursor:pointer;transition:color .15s}
+.t-btn:hover{color:var(--text)}
 
-/* LAYOUT */
-#main{display:flex;flex:1;min-height:0}
-#sidebar{width:230px;background:var(--bg2);border-right:1px solid var(--border);padding:20px 0;flex-shrink:0;overflow-y:auto}
-.nav-section{margin-bottom:8px}
-.nav-section-label{font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;padding:10px 20px 6px;display:block;font-weight:700}
-.nav-item{display:flex;align-items:center;gap:11px;padding:10px 20px;cursor:pointer;transition:all 0.15s;color:var(--text3);font-size:13px;font-weight:500;border-left:2px solid transparent;margin:1px 0}
-.nav-item:hover{background:var(--bg3);color:var(--text2)}
-.nav-item.active{background:var(--bg3);color:#fff;border-left-color:var(--accent)}
-#content{flex:1;overflow-y:auto;padding:32px}
+#main{display:flex;flex:1;overflow:hidden}
 
-/* PAGE HEADER */
-.page-header{margin-bottom:32px}
-.page-title{font-size:26px;font-weight:800;color:#fff;letter-spacing:-0.8px;margin-bottom:4px}
-.page-sub{font-size:13px;color:var(--text3);font-weight:400}
+/* ── SIDEBAR ── */
+#sidebar{width:200px;background:var(--bg);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 0;overflow-y:auto;flex-shrink:0}
+.s-label{font-size:10px;font-weight:500;color:var(--text3);letter-spacing:2px;text-transform:uppercase;padding:16px 24px 8px;display:block}
+.s-item{display:flex;align-items:center;gap:10px;padding:9px 24px;cursor:pointer;color:var(--text3);font-size:13px;font-weight:400;transition:color .15s;position:relative}
+.s-item:hover{color:var(--text2)}
+.s-item.active{color:var(--text)}
+.s-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);height:14px;width:2px;background:var(--gold);border-radius:0 2px 2px 0}
+.s-sub{padding-left:40px;font-size:12px;padding-top:7px;padding-bottom:7px}
 
-/* CARDS */
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px}
-.card-sm{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
-.card-title{font-size:11px;font-weight:700;color:var(--text3);margin-bottom:18px;letter-spacing:1.5px;text-transform:uppercase}
+/* ── CONTENT ── */
+#content{flex:1;overflow-y:auto;background:var(--bg)}
+.page{padding:36px 40px;max-width:1100px}
 
-/* GRIDS */
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
-.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+/* ── TYPOGRAPHY ── */
+.ph{margin-bottom:32px}
+.ph-title{font-size:22px;font-weight:500;color:var(--text);letter-spacing:-0.5px;margin-bottom:4px}
+.ph-sub{font-size:13px;color:var(--text3);font-weight:300}
 
-/* METRICS */
-.metric{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px}
-.metric-label{font-size:11px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;font-weight:600}
-.metric-value{font-size:30px;font-weight:800;color:#fff;line-height:1;letter-spacing:-1px}
-.metric-value.accent{color:var(--accent)}
-.metric-value.green{color:var(--green)}
-.metric-value.amber{color:var(--amber)}
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:24px}
+.card-sm{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px}
+.card-label{font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:20px}
 
-/* BUTTONS */
-.btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);border:none;border-radius:var(--radius);padding:10px 18px;color:#fff;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.2s}
-.btn:hover{background:var(--accent2)}
-.btn-ghost{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-family:'Inter',sans-serif;font-size:12px;font-weight:500;border-radius:var(--radius);padding:9px 16px;cursor:pointer;transition:all 0.2s}
-.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
-.btn-danger{background:var(--red-dim);border:1px solid var(--red);color:var(--red);font-family:'Inter',sans-serif;font-size:12px;font-weight:500;border-radius:var(--radius);padding:6px 12px;cursor:pointer;transition:opacity 0.2s}
-.btn-danger:hover{opacity:0.8}
+/* ── GRIDS ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 
-/* FORM */
-.field{margin-bottom:18px}
-.field label{display:block;font-size:11px;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:7px;font-weight:600}
-.input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:11px 14px;color:#fff;font-family:'Inter',sans-serif;font-size:13px;outline:none;transition:border-color 0.2s}
-.input:focus{border-color:var(--accent)}
-.select{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:11px 14px;color:#fff;font-family:'Inter',sans-serif;font-size:13px;outline:none;cursor:pointer}
-.textarea{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:11px 14px;color:#fff;font-family:'Inter',sans-serif;font-size:13px;outline:none;resize:vertical;min-height:80px;transition:border-color 0.2s}
-.textarea:focus{border-color:var(--accent)}
+/* ── STAT ── */
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:20px 22px}
+.stat-label{font-size:11px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;font-weight:500}
+.stat-val{font-size:32px;font-weight:300;color:var(--text);letter-spacing:-1px;line-height:1}
+.stat-val.gold{color:var(--gold)}
+.stat-val.green{color:var(--green)}
+.stat-val.amber{color:var(--amber)}
 
-/* TAGS */
-.tag{display:inline-flex;align-items:center;background:var(--bg4);border:1px solid var(--border2);border-radius:6px;padding:3px 10px;font-size:11px;color:var(--text2);font-weight:500}
-.tag.green{background:var(--green-dim);border-color:var(--green);color:var(--green)}
-.tag.amber{background:var(--amber-dim);border-color:var(--amber);color:var(--amber)}
-.tag.red{background:var(--red-dim);border-color:var(--red);color:var(--red)}
-.tag.accent{background:var(--accent-dim);border-color:var(--accent);color:#60a5fa}
-.tag.purple{background:var(--purple-dim);border-color:var(--purple);color:var(--purple)}
+/* ── MODULE TILES ── */
+.m-tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:24px 26px;cursor:pointer;transition:border-color .2s,background .2s}
+.m-tile:hover{border-color:var(--border2);background:var(--surface2)}
+.m-tile-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.m-tile-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.m-tile-arrow{color:var(--text3);font-size:16px;transition:transform .2s}
+.m-tile:hover .m-tile-arrow{transform:translate(2px,-2px)}
+.m-tile-name{font-size:15px;font-weight:500;color:var(--text);margin-bottom:4px}
+.m-tile-desc{font-size:12px;color:var(--text3);line-height:1.5;font-weight:300}
+.m-tile-foot{margin-top:16px;padding-top:16px;border-top:1px solid var(--border);font-size:12px;color:var(--text3)}
+.m-tile-foot span{color:var(--text2)}
 
-/* TABS */
-.tabs{display:flex;gap:2px;margin-bottom:24px;background:var(--bg3);padding:4px;border-radius:10px;border:1px solid var(--border)}
-.tab{flex:1;text-align:center;padding:9px;border-radius:8px;cursor:pointer;font-size:12px;color:var(--text3);transition:all 0.15s;font-weight:600;letter-spacing:0.3px}
+/* ── FORM ── */
+.f-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.inp{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s;min-width:0}
+.inp:focus{border-color:var(--gold)}
+.inp.grow{flex:1;min-width:160px}
+.sel{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;cursor:pointer}
+.txa{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;resize:vertical;min-height:72px;transition:border-color .2s}
+.txa:focus{border-color:var(--gold)}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;background:var(--gold);border:none;border-radius:var(--r);padding:10px 18px;color:#0c0c0c;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .2s;white-space:nowrap}
+.btn:hover{opacity:.85}
+.btn-outline{background:none;border:1px solid var(--border2);color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;border-radius:var(--r);padding:8px 16px;cursor:pointer;transition:all .15s}
+.btn-outline:hover{border-color:var(--text3);color:var(--text)}
+.btn-ghost{background:none;border:none;color:var(--text3);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:color .15s;padding:0}
+.btn-ghost:hover{color:var(--red)}
+
+/* ── LIST ── */
+.li{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.li:last-child{border-bottom:none}
+.li-body{flex:1;min-width:0}
+.li-title{font-size:13px;color:var(--text);margin-bottom:2px;font-weight:400}
+.li-sub{font-size:11px;color:var(--text3)}
+
+/* ── CHECKBOX ── */
+.cb{width:16px;height:16px;border:1px solid var(--border2);border-radius:4px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;margin-top:1px}
+.cb:hover{border-color:var(--gold)}
+.cb.on{background:var(--gold);border-color:var(--gold)}
+.cb.on::after{content:'✓';color:#0c0c0c;font-size:9px;font-weight:700}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:28px}
+.tab{padding:10px 0;margin-right:28px;font-size:13px;color:var(--text3);cursor:pointer;border-bottom:1px solid transparent;margin-bottom:-1px;transition:color .15s;font-weight:400}
 .tab:hover{color:var(--text2)}
-.tab.active{background:var(--bg2);color:#fff;border:1px solid var(--border2)}
+.tab.on{color:var(--text);border-bottom-color:var(--gold)}
 
-/* LIST ITEMS */
-.list-item{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)}
-.list-item:last-child{border-bottom:none}
-.list-item-content{flex:1;min-width:0}
-.list-item-title{font-size:13px;color:#fff;margin-bottom:3px;font-weight:500}
-.list-item-sub{font-size:11px;color:var(--text3)}
+/* ── BADGES ── */
+.badge{display:inline-flex;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:500;letter-spacing:0.5px;text-transform:uppercase}
+.badge.hi{background:var(--red-dim);color:var(--red)}
+.badge.md{background:var(--gold-dim);color:var(--gold)}
+.badge.lo{background:var(--green-dim);color:var(--green)}
+.badge.new{background:var(--blue-dim);color:var(--blue)}
+.badge.contacted{background:#180d20;color:#c084fc}
+.badge.interested{background:var(--gold-dim);color:var(--gold)}
+.badge.negotiating{background:#1a1400;color:#fde68a}
+.badge.closed{background:var(--green-dim);color:var(--green)}
+.badge.rejected{background:var(--red-dim);color:var(--red)}
+.badge.planned{background:var(--blue-dim);color:var(--blue)}
+.badge.active{background:var(--green-dim);color:var(--green)}
+.badge.maintenance{background:var(--gold-dim);color:var(--amber)}
+.badge.removed{background:var(--red-dim);color:var(--red)}
 
-/* CHECKBOX */
-.checkbox{width:18px;height:18px;border:1.5px solid var(--border2);border-radius:5px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;margin-top:1px}
-.checkbox:hover{border-color:var(--accent)}
-.checkbox.checked{background:var(--accent);border-color:var(--accent)}
-.checkbox.checked::after{content:'✓';color:#fff;font-size:11px;font-weight:700}
+/* ── PROGRESS ── */
+.prog{background:var(--surface3);border-radius:20px;height:3px;margin-top:8px;overflow:hidden}
+.prog-fill{height:100%;border-radius:20px;background:var(--gold);transition:width .4s}
 
-/* MODULE CARDS */
-.module-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-xl);padding:24px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
-.module-card:hover{border-color:var(--border2);background:var(--bg3);transform:translateY(-2px)}
-.module-card-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:22px}
-.module-card-name{font-size:16px;font-weight:700;color:#fff;margin-bottom:5px;letter-spacing:-0.3px}
-.module-card-desc{font-size:12px;color:var(--text3);line-height:1.5;font-weight:400}
-.module-card-stats{display:flex;gap:12px;margin-top:16px;font-size:12px;color:var(--text3);font-weight:500}
-.module-card-stats span{color:#fff;font-weight:600}
-
-/* BADGES */
-.priority{display:inline-flex;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
-.priority.high{background:var(--red-dim);color:var(--red);border:1px solid var(--red)}
-.priority.med{background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber)}
-.priority.low{background:var(--green-dim);color:var(--green);border:1px solid var(--green)}
-
-.stage{display:inline-flex;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
-.stage.new{background:var(--accent-dim);color:#60a5fa;border:1px solid var(--accent)}
-.stage.contacted{background:var(--purple-dim);color:var(--purple);border:1px solid var(--purple)}
-.stage.interested{background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber)}
-.stage.negotiating{background:#1a1200;color:#facc15;border:1px solid #facc15}
-.stage.closed{background:var(--green-dim);color:var(--green);border:1px solid var(--green)}
-.stage.rejected{background:var(--red-dim);color:var(--red);border:1px solid var(--red)}
-
-.screen-status{display:inline-flex;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
-.screen-status.planned{background:var(--accent-dim);color:#60a5fa;border:1px solid var(--accent)}
-.screen-status.active{background:var(--green-dim);color:var(--green);border:1px solid var(--green)}
-.screen-status.maintenance{background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber)}
-.screen-status.removed{background:var(--red-dim);color:var(--red);border:1px solid var(--red)}
-
-/* PROGRESS */
-.progress-bar{background:var(--bg4);border-radius:20px;height:5px;overflow:hidden;margin-top:8px}
-.progress-fill{height:100%;border-radius:20px;background:var(--accent);transition:width 0.5s}
-
-/* EMPTY STATE */
-.empty-state{text-align:center;padding:52px 24px;color:var(--text3)}
-.empty-state-icon{font-size:36px;margin-bottom:12px;opacity:0.4}
-.empty-state p{font-size:13px;line-height:1.7;color:var(--text3)}
-
-/* QUICK CAPTURE */
-.qc-bar{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:28px;display:flex;gap:12px;align-items:center}
-.qc-input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:11px 15px;color:#fff;font-family:'Inter',sans-serif;font-size:13px;outline:none}
-.qc-input:focus{border-color:var(--accent)}
-.qc-label{font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;white-space:nowrap}
-
-/* SEARCH */
+/* ── SEARCH ── */
 .search-wrap{position:relative;margin-bottom:20px}
-.search-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:11px 14px 11px 38px;color:#fff;font-family:'Inter',sans-serif;font-size:13px;outline:none;transition:border-color 0.2s}
-.search-input:focus{border-color:var(--accent)}
-.search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px}
+.search-inp{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px 10px 36px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
+.search-inp:focus{border-color:var(--border2)}
+.search-ico{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px;pointer-events:none}
 
-/* TOAST */
-#toast{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px}
-.toast-item{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:12px 18px;font-size:13px;color:var(--text2);display:flex;align-items:center;gap:8px;animation:slideIn 0.3s ease;font-weight:500}
-.toast-item.success{border-color:var(--green);color:var(--green)}
-.toast-item.error{border-color:var(--amber);color:var(--amber)}
-@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+/* ── EMPTY ── */
+.empty{text-align:center;padding:52px 20px}
+.empty p{font-size:13px;color:var(--text3);font-weight:300;line-height:1.7}
 
-/* OFFLINE */
-#offline-banner{background:var(--amber-dim);border-bottom:1px solid var(--amber);padding:9px 24px;font-size:12px;color:var(--amber);display:none;align-items:center;gap:8px;font-weight:600}
+/* ── QC BAR ── */
+.qc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px 20px;margin-bottom:28px;display:flex;gap:10px;align-items:center}
+.qc-hint{font-size:11px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;font-weight:500;white-space:nowrap}
+.qc-inp{flex:1;background:transparent;border:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none}
 
-@media(max-width:768px){
+/* ── TOAST ── */
+#toast{position:fixed;bottom:24px;right:28px;z-index:999;display:flex;flex-direction:column;gap:8px}
+.ti{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:11px 16px;font-size:12px;color:var(--text2);animation:tin .25s ease;font-weight:400}
+.ti.ok{color:var(--green)}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── OFFLINE ── */
+#ob{background:var(--surface);border-bottom:1px solid var(--amber);padding:7px 28px;font-size:11px;color:var(--amber);display:none;font-weight:500;letter-spacing:0.5px}
+
+@media(max-width:720px){
   #sidebar{display:none}
-  .grid-4{grid-template-columns:1fr 1fr}
-  .grid-3{grid-template-columns:1fr}
-  .grid-2{grid-template-columns:1fr}
-  #content{padding:18px}
+  .g4{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:1fr}
+  .g2{grid-template-columns:1fr}
+  .page{padding:20px}
 }
 </style>
 </head>
 <body>
 <div id="app"></div>
 <div id="toast"></div>
-
 <script>
-const JSONBIN_BIN_ID = '6a238aa1da38895dfe8f6a56';
-const JSONBIN_KEY = '$2a$10$CIHnQinqYxnaRDkfr.tDBu0RXUclMvjiQMT4SIyMtt6WGNeooJW3S';
-const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
+const BIN='6a238aa1da38895dfe8f6a56',KEY='$2a$10$CIHnQinqYxnaRDkfr.tDBu0RXUclMvjiQMT4SIyMtt6WGNeooJW3S',URL=`https://api.jsonbin.io/v3/b/${BIN}`;
 
-const StorageService = {
-  _data:null,_dirty:false,_syncTimer:null,
-  async loadData(){
-    try{
-      const res=await fetch(JSONBIN_URL+'/latest',{headers:{'X-Master-Key':JSONBIN_KEY,'X-Bin-Meta':'false'}});
-      if(!res.ok)throw new Error();
-      const json=await res.json();
-      this._data=json;localStorage.setItem('lewinos_cache',JSON.stringify(json));return json;
-    }catch(e){
-      const c=localStorage.getItem('lewinos_cache');
-      if(c){this._data=JSON.parse(c);return this._data;}
-      this._data=this._defaultData();return this._data;
-    }
+/* ── STORAGE ── */
+const S={
+  d:null,dirty:false,t:null,
+  async load(){
+    try{const r=await fetch(URL+'/latest',{headers:{'X-Master-Key':KEY,'X-Bin-Meta':'false'}});if(!r.ok)throw 0;const j=await r.json();this.d=j;ls('set','lw_cache',JSON.stringify(j));return j}
+    catch{const c=ls('get','lw_cache');if(c){this.d=JSON.parse(c);return this.d}this.d=this.def();return this.d}
   },
-  async saveData(path,value){
-    if(!this._data)await this.loadData();
-    this._setNested(this._data,path,value);
-    this._data.meta=this._data.meta||{};
-    this._data.meta.lastSync=new Date().toISOString();
-    localStorage.setItem('lewinos_cache',JSON.stringify(this._data));
-    this._dirty=true;
-    if(this._syncTimer)clearTimeout(this._syncTimer);
-    this._syncTimer=setTimeout(()=>this.syncData(),1500);
-    return true;
+  async save(path,val){
+    if(!this.d)await this.load();set(this.d,path,val);
+    if(!this.d.meta)this.d.meta={};this.d.meta.lastSync=new Date().toISOString();
+    ls('set','lw_cache',JSON.stringify(this.d));this.dirty=true;
+    clearTimeout(this.t);this.t=setTimeout(()=>this.sync(),1600);
   },
-  async syncData(){
-    if(!this._dirty||!this._data)return;
-    try{
-      const res=await fetch(JSONBIN_URL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_KEY},body:JSON.stringify(this._data)});
-      if(res.ok){this._dirty=false;showToast('Synced to cloud','success');}
-    }catch(e){showToast('Offline — saved locally','error');}
+  async sync(){
+    if(!this.dirty||!this.d)return;
+    try{const r=await fetch(URL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':KEY},body:JSON.stringify(this.d)});if(r.ok){this.dirty=false;toast('Saved','ok')}}
+    catch{toast('Offline — saved locally')}
   },
-  getData(path){if(!this._data)return null;return path?this._getNested(this._data,path):this._data;},
-  _getNested(obj,path){return path.split('.').reduce((o,k)=>o&&o[k]!==undefined?o[k]:null,obj);},
-  _setNested(obj,path,value){const keys=path.split('.');let cur=obj;for(let i=0;i<keys.length-1;i++){if(!cur[keys[i]]||typeof cur[keys[i]]!=='object')cur[keys[i]]={};cur=cur[keys[i]];}cur[keys[keys.length-1]]=value;},
-  _defaultData(){return{meta:{version:'1.0.0',appName:'LewinOS',lastSync:null,createdAt:new Date().toISOString()},user:{username:'lewin',passwordHash:'',rememberMe:false,preferences:{theme:'dark'}},diary:{brain:{captures:[],tags:[],categories:['Business Ideas','Content Ideas','Trading Thoughts','Random Notes']},planner:{tasks:[]},goals:{longTerm:[],shortTerm:[],milestones:[]},journal:{entries:[]},notesVault:{notes:[],folders:[]}},disciplScreens:{screens:[],leads:[],locker:{notes:[],research:[],businessIdeas:[]},planningBoard:{tasks:[],opportunities:[],followUps:[]}},futureModules:{}};}
+  get(p){return p?get(this.d,p):this.d},
+  def(){return{meta:{v:'1.0',app:'LewinOS',lastSync:null},user:{},diary:{brain:{items:[],cats:['Business','Content','Trading','Random']},planner:{tasks:[]},goals:{lt:[],st:[]},journal:{entries:[]},notes:{list:[],folders:['General','Important','Research','Business']}},screens:{screens:[],leads:[],locker:{items:[]},plan:{tasks:[],opps:[],fu:[]}},fm:{}}}
 };
 
-const ModuleRegistry={
-  _modules:{},
-  register(mod){this._modules[mod.id]=mod;},
-  getAll(){return Object.values(this._modules);},
-  get(id){return this._modules[id];}
-};
+function ls(op,k,v){try{if(op==='set')localStorage.setItem(k,v);else return localStorage.getItem(k)}catch{}}
+function get(o,p){return p.split('.').reduce((a,k)=>a&&a[k]!==undefined?a[k]:null,o)}
+function set(o,p,v){const ks=p.split('.');let c=o;for(let i=0;i<ks.length-1;i++){if(!c[ks[i]]||typeof c[ks[i]]!=='object')c[ks[i]]={};c=c[ks[i]]}c[ks[ks.length-1]]=v}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2)}
+function fd(d){if(!d)return'';return new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}
+function toast(msg,type=''){const t=document.getElementById('toast'),i=document.createElement('div');i.className=`ti ${type}`;i.textContent=msg;t.appendChild(i);setTimeout(()=>i.remove(),2800)}
 
-let appState={loggedIn:false,currentModule:'dashboard',currentSubModule:null,data:null};
+/* ── REGISTRY ── */
+const R={_m:{},reg(m){this._m[m.id]=m},all(){return Object.values(this._m)},get(id){return this._m[id]}};
 
-function showToast(msg,type=''){
-  const t=document.getElementById('toast');
-  const item=document.createElement('div');
-  item.className=`toast-item ${type}`;
-  item.textContent=(type==='success'?'✓ ':type==='error'?'⚡ ':'')+msg;
-  t.appendChild(item);setTimeout(()=>item.remove(),3000);
-}
+let st={page:'dash',sub:null,data:null};
 
-function formatDate(d){if(!d)return '';return new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});}
-function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2);}
+/* ── AUTH ── */
+function chkAuth(){const a=ls('get','lw_auth');if(a){const p=JSON.parse(a);if(p.ok){st.loggedIn=true;return true}}return false}
 
-function checkLogin(){
-  const s=localStorage.getItem('lewinos_auth');
-  if(s){const a=JSON.parse(s);if(a.loggedIn){appState.loggedIn=true;return true;}}return false;
-}
-
-function renderLogin(){
+function showLogin(){
   document.getElementById('app').innerHTML=`
   <div id="login-screen">
-    <div class="login-box">
-      <div class="login-logo">Lewin<span>OS</span></div>
-      <div class="login-sub">Personal Operating System</div>
-      <div class="login-error" id="login-err">⚠ Invalid credentials. Try again.</div>
-      <label class="login-label">Username</label>
-      <input class="login-input" id="l-user" type="text" placeholder="Enter username" autocomplete="username">
-      <label class="login-label">Password</label>
-      <input class="login-input" id="l-pass" type="password" placeholder="••••••••" autocomplete="current-password">
-      <label class="login-check"><input type="checkbox" id="l-rem"> Remember me on this device</label>
-      <button class="login-btn" onclick="doLogin()">BOOT SYSTEM →</button>
+    <div class="login-wrap">
+      <div class="login-mark">Lewin<span>OS</span></div>
+      <div class="login-title">Welcome <strong>back.</strong></div>
+      <div class="login-sub">Sign in to your personal OS</div>
+      <div class="login-err" id="lerr">Incorrect credentials</div>
+      <div class="login-field"><input id="lu" type="text" placeholder="Username" autocomplete="username"></div>
+      <div class="login-field"><input id="lp" type="password" placeholder="Password" autocomplete="current-password"></div>
+      <label class="login-remember"><input type="checkbox" id="lr"> Keep me signed in</label>
+      <button class="login-btn" onclick="doLogin()">Sign in →</button>
     </div>
   </div>`;
-  document.getElementById('l-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+  document.getElementById('lp').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
 }
 
 function doLogin(){
-  const u=document.getElementById('l-user').value.trim().toLowerCase();
-  const p=document.getElementById('l-pass').value;
-  const rem=document.getElementById('l-rem').checked;
+  const u=document.getElementById('lu').value.trim().toLowerCase();
+  const p=document.getElementById('lp').value;
   if(u==='lewin'&&p==='9890'){
-    appState.loggedIn=true;
-    if(rem)localStorage.setItem('lewinos_auth',JSON.stringify({loggedIn:true}));
-    initApp();
-  }else{document.getElementById('login-err').style.display='block';}
+    st.loggedIn=true;
+    if(document.getElementById('lr').checked)ls('set','lw_auth',JSON.stringify({ok:true}));
+    boot();
+  }else document.getElementById('lerr').style.display='block';
 }
+function doLogout(){ls('set','lw_auth','{}');st.loggedIn=false;showLogin()}
 
-function doLogout(){localStorage.removeItem('lewinos_auth');appState.loggedIn=false;renderLogin();}
-
-ModuleRegistry.register({
-  id:'diary',name:'Diary',icon:'📓',desc:'Brain, Planner, Goals, Journal & Notes',
-  color:'#3b82f6',colorDim:'#0c1a35',
-  subModules:['brain','planner','goals','journal','notes'],
-  getStats(data){const d=data?.diary||{};const tasks=(d.planner?.tasks||[]).filter(t=>!t.done).length;const ideas=(d.brain?.captures||[]).length;return `<span>${tasks}</span> pending tasks &nbsp;·&nbsp; <span>${ideas}</span> ideas`;}
+/* ── MODULES ── */
+R.reg({id:'diary',name:'Diary',icon:'○',desc:'Second brain, tasks, goals, journal',
+  sub:['brain','planner','goals','journal','notes'],
+  stats(d){const t=(d?.diary?.planner?.tasks||[]).filter(x=>!x.done).length;const i=(d?.diary?.brain?.items||[]).length;return`<span>${t}</span> tasks · <span>${i}</span> ideas`}
 });
-ModuleRegistry.register({
-  id:'discipl',name:'Discipl Screens',icon:'📺',desc:'Leads, Screens, Locker & Planning',
-  color:'#22c55e',colorDim:'#051a0e',
-  subModules:['leads','screens','locker','planning'],
-  getStats(data){const d=data?.disciplScreens||{};const screens=(d.screens||[]).filter(s=>s.status==='active').length;const leads=(d.leads||[]).filter(l=>l.stage!=='rejected'&&l.stage!=='closed').length;return `<span>${screens}</span> active screens &nbsp;·&nbsp; <span>${leads}</span> leads`;}
+R.reg({id:'screens',name:'Discipl Screens',icon:'□',desc:'Leads, screens, locker, planning',
+  sub:['leads','screens','locker','plan'],
+  stats(d){const s=(d?.screens?.screens||[]).filter(x=>x.status==='active').length;const l=(d?.screens?.leads||[]).filter(x=>!['closed','rejected'].includes(x.stage)).length;return`<span>${s}</span> active · <span>${l}</span> leads`}
 });
-ModuleRegistry.register({
-  id:'finance',name:'Finance',icon:'💹',desc:'Opens your Finance App in a new tab',
-  color:'#a855f7',colorDim:'#150828',
-  isExternal:true,externalUrl:'https://lewinfin.vercel.app',
-  getStats(){return 'External application';}
+R.reg({id:'finance',name:'Finance',icon:'◇',desc:'Personal finance dashboard',
+  ext:true,url:'https://lewinfin.vercel.app',
+  stats(){return'External app'}
 });
 
-async function initApp(){
+/* ── BOOT ── */
+async function boot(){
   document.getElementById('app').innerHTML=`
-  <div id="offline-banner">⚡ You are offline. Changes saved locally and will sync when reconnected.</div>
+  <div id="ob">You are offline — changes saved locally</div>
   <div id="topbar">
-    <div class="topbar-left">
-      <div class="logo" onclick="navigate('dashboard')">Lewin<span>OS</span></div>
-      <div class="topbar-status"><div class="status-dot" id="sync-dot"></div><span id="sync-status">Connecting...</span></div>
-    </div>
-    <div class="topbar-right">
-      <button class="sync-btn" onclick="forceSync()">↺ Sync Now</button>
-      <button class="logout-btn" onclick="doLogout()">Logout</button>
+    <div class="t-logo" onclick="go('dash')">Lewin<em>OS</em></div>
+    <div class="t-right">
+      <div class="t-sync"><div class="t-dot" id="tdot"></div><span id="tst" style="font-size:11px;color:var(--text3)">syncing…</span></div>
+      <button class="t-btn" onclick="fsync()">sync</button>
+      <button class="t-btn" onclick="doLogout()">sign out</button>
     </div>
   </div>
   <div id="main">
-    <div id="sidebar">${renderSidebar()}</div>
+    <div id="sidebar"></div>
     <div id="content"></div>
   </div>`;
 
-  window.addEventListener('offline',()=>{
-    document.getElementById('offline-banner').style.display='flex';
-    document.getElementById('sync-dot').style.background='#f59e0b';
-    document.getElementById('sync-dot').style.boxShadow='0 0 6px #f59e0b';
-    document.getElementById('sync-status').textContent='Offline';
-  });
-  window.addEventListener('online',()=>{
-    document.getElementById('offline-banner').style.display='none';
-    document.getElementById('sync-dot').style.background='#22c55e';
-    document.getElementById('sync-dot').style.boxShadow='0 0 6px #22c55e';
-    document.getElementById('sync-status').textContent='Online';
-    StorageService.syncData();
-  });
+  window.addEventListener('offline',()=>{document.getElementById('ob').style.display='block';setDot('#fbbf24')});
+  window.addEventListener('online',()=>{document.getElementById('ob').style.display='none';setDot('#4ade80');S.sync()});
+  function setDot(c){const d=document.getElementById('tdot');if(d)d.style.background=c}
 
-  showToast('Loading LewinOS...','');
-  appState.data=await StorageService.loadData();
-  document.getElementById('sync-dot').style.background='#22c55e';
-  document.getElementById('sync-status').textContent='Synced';
-  navigate('dashboard');
+  toast('Loading…');
+  st.data=await S.load();
+  setDot('#4ade80');document.getElementById('tst').textContent='synced';
+  go('dash');
+}
+
+async function fsync(){st.data=await S.load();S.dirty=true;await S.sync();render();toast('Synced','ok')}
+
+/* ── NAV ── */
+function go(page,sub=null){
+  if(page==='finance'){window.open('https://lewinfin.vercel.app','_blank');return}
+  st.page=page;st.sub=sub||(page!=='dash'?R.get(page)?.sub?.[0]:null);
+  renderSidebar();render();
 }
 
 function renderSidebar(){
-  const mods=ModuleRegistry.getAll();
-  let html=`<div class="nav-section">
-    <span class="nav-section-label">System</span>
-    <div class="nav-item ${appState.currentModule==='dashboard'?'active':''}" onclick="navigate('dashboard')">
-      <span style="font-size:15px">⊞</span> Dashboard
-    </div>
-  </div>
-  <div class="nav-section"><span class="nav-section-label">Modules</span>`;
+  const mods=R.all();
+  let h=`<span class="s-label">Menu</span>
+  <div class="s-item ${st.page==='dash'?'active':''}" onclick="go('dash')">Dashboard</div>
+  <span class="s-label" style="margin-top:8px">Modules</span>`;
   mods.forEach(m=>{
-    html+=`<div class="nav-item ${appState.currentModule===m.id?'active':''}" onclick="navigate('${m.id}')">
-      <span style="font-size:15px">${m.icon}</span> ${m.name}
-    </div>`;
-    if(appState.currentModule===m.id&&m.subModules){
-      const names={brain:'Brain',planner:'Planner',goals:'Goals',journal:'Journal',notes:'Notes Vault',leads:'Leads',screens:'Screens',locker:'Locker',planning:'Planning'};
-      m.subModules.forEach(sub=>{
-        html+=`<div class="nav-item ${appState.currentSubModule===sub?'active':''}" style="padding-left:40px;font-size:12px;color:${appState.currentSubModule===sub?'#fff':'var(--text3)'}" onclick="navigate('${m.id}','${sub}')">
-          ${names[sub]||sub}
-        </div>`;
-      });
+    h+=`<div class="s-item ${st.page===m.id?'active':''}" onclick="go('${m.id}')">${m.name}</div>`;
+    if(st.page===m.id&&m.sub){
+      const nl={brain:'Brain',planner:'Planner',goals:'Goals',journal:'Journal',notes:'Notes',leads:'Leads',screens:'Screens',locker:'Locker',plan:'Planning'};
+      m.sub.forEach(s=>{h+=`<div class="s-item s-sub ${st.sub===s?'active':''}" onclick="go('${m.id}','${s}')">${nl[s]||s}</div>`});
     }
   });
-  html+='</div>';
-  return html;
+  document.getElementById('sidebar').innerHTML=h;
 }
 
-function updateSidebar(){document.getElementById('sidebar').innerHTML=renderSidebar();}
-
-function navigate(moduleId,subModule=null){
-  if(moduleId==='finance'){window.open('https://lewinfin.vercel.app','_blank');return;}
-  appState.currentModule=moduleId;
-  appState.currentSubModule=subModule||(moduleId!=='dashboard'?ModuleRegistry.get(moduleId)?.subModules?.[0]:null);
-  updateSidebar();renderContent();
+function render(){
+  const c=document.getElementById('content');
+  if(st.page==='dash')c.innerHTML=renderDash();
+  else if(st.page==='diary')c.innerHTML=renderDiary(st.sub);
+  else if(st.page==='screens')c.innerHTML=renderScreensMod(st.sub);
 }
 
-async function forceSync(){
-  appState.data=await StorageService.loadData();
-  StorageService._dirty=true;await StorageService.syncData();renderContent();showToast('Sync complete!','success');
-}
+/* ── DASHBOARD ── */
+function renderDash(){
+  const d=st.data||{};const now=new Date();
+  const hr=now.getHours();const g=hr<12?'Morning':hr<17?'Afternoon':'Evening';
+  const tasks=(d.diary?.planner?.tasks||[]).filter(t=>!t.done).slice(0,5);
+  const ideas=(d.diary?.brain?.items||[]).slice(0,4);
+  const mods=R.all();
 
-function renderContent(){
-  const c=document.getElementById('content');const m=appState.currentModule;
-  if(m==='dashboard'){c.innerHTML=renderDashboard();return;}
-  const mod=ModuleRegistry.get(m);if(!mod)return;
-  const sub=appState.currentSubModule||mod.subModules?.[0];
-  if(m==='diary')c.innerHTML=renderDiary(sub);
-  else if(m==='discipl')c.innerHTML=renderDisciples(sub);
-}
-
-function renderDashboard(){
-  const data=appState.data||{};const mods=ModuleRegistry.getAll();
-  const tasks=(data.diary?.planner?.tasks||[]).filter(t=>!t.done).slice(0,5);
-  const captures=(data.diary?.brain?.captures||[]).slice(0,4);
-  const now=new Date();
-  const hr=now.getHours();
-  const greet=hr<12?'Good Morning':'Good Afternoon';
-  const dateStr=now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-
-  let modsHtml=mods.map(m=>`
-    <div class="module-card" onclick="navigate('${m.id}')">
-      <div class="module-card-icon" style="background:${m.colorDim}">${m.icon}</div>
-      <div class="module-card-name">${m.name}</div>
-      <div class="module-card-desc">${m.desc}</div>
-      <div class="module-card-stats">${m.getStats(data)}</div>
-    </div>`).join('');
-
-  let tasksHtml=tasks.length?tasks.map(t=>`
-    <div class="list-item">
-      <div class="checkbox ${t.done?'checked':''}" onclick="toggleTask('${t.id}')"></div>
-      <div class="list-item-content">
-        <div class="list-item-title">${t.text}</div>
-        <div style="display:flex;gap:6px;margin-top:4px;align-items:center">
-          ${t.priority?`<span class="priority ${t.priority}">${t.priority}</span>`:''}
-          ${t.due?`<span style="font-size:11px;color:var(--text3)">${formatDate(t.due)}</span>`:''}
-        </div>
+  return`<div class="page">
+  <div class="ph" style="margin-bottom:36px">
+    <div class="ph-title">Good ${g}, Lewin.</div>
+    <div class="ph-sub">${now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})}</div>
+  </div>
+  <div class="qc">
+    <span class="qc-hint">Capture</span>
+    <input class="qc-inp" id="qci" type="text" placeholder="Drop a thought…">
+    <select id="qcc" class="sel" style="width:130px;background:transparent;border:none;font-size:12px;color:var(--text3)">
+      <option value="Random">Random</option>
+      <option value="Business">Business</option>
+      <option value="Content">Content</option>
+      <option value="Trading">Trading</option>
+      <option value="task">→ Task</option>
+    </select>
+    <button class="btn" style="padding:8px 16px;font-size:12px" onclick="qcap()">Add</button>
+  </div>
+  <div class="g3" style="margin-bottom:28px">
+    ${mods.map(m=>`
+    <div class="m-tile" onclick="go('${m.id}')">
+      <div class="m-tile-top">
+        <div class="m-tile-icon">${m.icon}</div>
+        <span class="m-tile-arrow">↗</span>
       </div>
-    </div>`).join(''):'<div class="empty-state"><div class="empty-state-icon">✓</div><p>All clear — no pending tasks.</p></div>';
-
-  let ideasHtml=captures.length?captures.map(c=>`
-    <div class="list-item">
-      <div class="list-item-content">
-        <div class="list-item-title">${c.text}</div>
-        <div class="list-item-sub">${c.category||'Note'} · ${formatDate(c.createdAt)}</div>
-      </div>
-    </div>`).join(''):'<div class="empty-state"><div class="empty-state-icon">💡</div><p>No ideas captured yet.</p></div>';
-
-  return `
-    <div class="page-header">
-      <div class="page-title">${greet}, Lewin</div>
-      <div class="page-sub">${dateStr}</div>
-    </div>
-    <div class="qc-bar">
-      <span class="qc-label">Quick Capture</span>
-      <input class="qc-input" id="qc-input" type="text" placeholder="Drop a thought, idea, or task...">
-      <select id="qc-cat" class="select" style="width:140px">
-        <option value="Random Notes">Random Notes</option>
-        <option value="Business Ideas">Business Ideas</option>
-        <option value="Content Ideas">Content Ideas</option>
-        <option value="Trading Thoughts">Trading Thoughts</option>
-        <option value="Task">Task</option>
-      </select>
-      <button class="btn" onclick="quickCapture()">+ Capture</button>
-    </div>
-    <div class="grid-3" style="margin-bottom:24px">${modsHtml}</div>
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-title">Today's Tasks</div>
-        ${tasksHtml}
-        <button class="btn-ghost" style="margin-top:14px;width:100%;text-align:center" onclick="navigate('diary','planner')">View All Tasks →</button>
-      </div>
-      <div class="card">
-        <div class="card-title">Recent Captures</div>
-        ${ideasHtml}
-        <button class="btn-ghost" style="margin-top:14px;width:100%;text-align:center" onclick="navigate('diary','brain')">Open Brain →</button>
-      </div>
-    </div>`;
-}
-
-async function quickCapture(){
-  const input=document.getElementById('qc-input');const cat=document.getElementById('qc-cat');
-  const text=input.value.trim();if(!text)return;
-  const d=appState.data||{};
-  if(!d.diary)d.diary=StorageService._defaultData().diary;
-  if(cat.value==='Task'){
-    const tasks=d.diary.planner.tasks||[];
-    tasks.unshift({id:uid(),text,done:false,priority:'med',createdAt:new Date().toISOString()});
-    await StorageService.saveData('diary.planner.tasks',tasks);
-  }else{
-    const captures=d.diary.brain.captures||[];
-    captures.unshift({id:uid(),text,category:cat.value,tags:[],createdAt:new Date().toISOString()});
-    await StorageService.saveData('diary.brain.captures',captures);
-  }
-  appState.data=StorageService.getData();input.value='';renderContent();showToast('Captured!','success');
-}
-
-async function toggleTask(id){
-  const tasks=appState.data.diary.planner.tasks;const t=tasks.find(x=>x.id===id);
-  if(t){t.done=!t.done;await StorageService.saveData('diary.planner.tasks',tasks);appState.data=StorageService.getData();renderContent();}
-}
-
-function renderDiary(sub){
-  const fns={brain:renderBrain,planner:renderPlanner,goals:renderGoals,journal:renderJournal,notes:renderNotes};
-  const labels={brain:'Brain',planner:'Planner',goals:'Goals',journal:'Journal',notes:'Notes'};
-  return `
-    <div class="page-header">
-      <div class="page-title">📓 Diary</div>
-      <div class="page-sub">Your second brain — Brain · Planner · Goals · Journal · Notes</div>
-    </div>
-    <div class="tabs">
-      ${['brain','planner','goals','journal','notes'].map(s=>`<div class="tab ${sub===s?'active':''}" onclick="navigate('diary','${s}')">${labels[s]}</div>`).join('')}
-    </div>
-    ${(fns[sub]||renderBrain)()}`;
-}
-
-function renderBrain(){
-  const captures=(appState.data?.diary?.brain?.captures)||[];
-  const cats=(appState.data?.diary?.brain?.categories)||[];
-  return `
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">New Capture</div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <input class="input" id="b-text" placeholder="What's on your mind?" style="flex:1;min-width:200px">
-        <select class="select" id="b-cat" style="width:160px">${cats.map(c=>`<option>${c}</option>`).join('')}</select>
-        <input class="input" id="b-tags" placeholder="tags, comma separated" style="width:180px">
-        <button class="btn" onclick="addCapture()">+ Add</button>
-      </div>
-    </div>
-    <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="b-search" placeholder="Search your brain..." oninput="filterCaptures()"></div>
-    <div id="captures-list">
-    ${captures.length?captures.map(c=>`
-      <div class="card-sm list-item" style="margin-bottom:8px;padding:14px 16px;display:flex" id="cap-${c.id}">
-        <div style="flex:1">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span class="tag accent">${c.category||'Note'}</span>
-            ${(c.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('')}
+      <div class="m-tile-name">${m.name}</div>
+      <div class="m-tile-desc">${m.desc}</div>
+      <div class="m-tile-foot">${m.stats(d)}</div>
+    </div>`).join('')}
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-label">Pending Tasks</div>
+      ${tasks.length?tasks.map(t=>`
+      <div class="li">
+        <div class="cb ${t.done?'on':''}" onclick="tglTask('${t.id}')"></div>
+        <div class="li-body">
+          <div class="li-title">${t.text}</div>
+          <div style="display:flex;gap:6px;margin-top:4px;align-items:center">
+            ${t.priority?`<span class="badge ${t.priority==='high'?'hi':t.priority==='med'?'md':'lo'}">${t.priority}</span>`:''}
+            ${t.due?`<span class="li-sub">${fd(t.due)}</span>`:''}
           </div>
-          <div style="font-size:14px;color:#fff;line-height:1.6;font-weight:400">${c.text}</div>
-          <div style="font-size:11px;color:var(--text3);margin-top:8px">${formatDate(c.createdAt)}</div>
         </div>
-        <button class="btn-danger" style="align-self:flex-start;margin-left:12px" onclick="deleteCapture('${c.id}')">✕</button>
-      </div>`).join(''):'<div class="empty-state"><div class="empty-state-icon">🧠</div><p>Your second brain is empty.<br>Start capturing your ideas!</p></div>'}
-    </div>`;
-}
-
-async function addCapture(){
-  const text=document.getElementById('b-text').value.trim();if(!text)return;
-  const cat=document.getElementById('b-cat').value;
-  const tags=document.getElementById('b-tags').value.split(',').map(t=>t.trim()).filter(Boolean);
-  const captures=appState.data.diary.brain.captures||[];
-  captures.unshift({id:uid(),text,category:cat,tags,createdAt:new Date().toISOString()});
-  await StorageService.saveData('diary.brain.captures',captures);
-  appState.data=StorageService.getData();navigate('diary','brain');showToast('Idea captured!','success');
-}
-
-async function deleteCapture(id){
-  const captures=appState.data.diary.brain.captures.filter(c=>c.id!==id);
-  await StorageService.saveData('diary.brain.captures',captures);
-  appState.data=StorageService.getData();navigate('diary','brain');
-}
-
-function filterCaptures(){
-  const q=document.getElementById('b-search').value.toLowerCase();
-  document.querySelectorAll('[id^="cap-"]').forEach(el=>{el.style.display=el.textContent.toLowerCase().includes(q)?'':'none';});
-}
-
-function renderPlanner(){
-  const tasks=(appState.data?.diary?.planner?.tasks)||[];
-  const pending=tasks.filter(t=>!t.done);const done=tasks.filter(t=>t.done);
-  return `
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">New Task</div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <input class="input" id="t-text" placeholder="What needs to be done?" style="flex:1;min-width:200px">
-        <select class="select" id="t-pri" style="width:120px">
-          <option value="high">🔴 High</option>
-          <option value="med" selected>🟡 Medium</option>
-          <option value="low">🟢 Low</option>
-        </select>
-        <input class="input" id="t-due" type="date" style="width:160px">
-        <button class="btn" onclick="addTask()">+ Add Task</button>
-      </div>
+      </div>`).join(''):`<div class="empty"><p>No pending tasks.</p></div>`}
+      <button class="btn-outline" style="margin-top:16px;width:100%;text-align:center;font-size:12px" onclick="go('diary','planner')">All tasks</button>
     </div>
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-title">Pending <span style="color:var(--text3)">(${pending.length})</span></div>
-        ${pending.length?pending.map(t=>`
-          <div class="list-item">
-            <div class="checkbox" onclick="toggleTaskPage('${t.id}')"></div>
-            <div class="list-item-content">
-              <div class="list-item-title">${t.text}</div>
-              <div style="display:flex;gap:6px;margin-top:4px;align-items:center">
-                <span class="priority ${t.priority}">${t.priority}</span>
-                ${t.due?`<span style="font-size:11px;color:var(--text3)">${formatDate(t.due)}</span>`:''}
-              </div>
-            </div>
-            <button class="btn-danger" onclick="deleteTask('${t.id}')">✕</button>
-          </div>`).join(''):'<div class="empty-state"><div class="empty-state-icon">✓</div><p>All done!</p></div>'}
-      </div>
-      <div class="card">
-        <div class="card-title">Completed <span style="color:var(--text3)">(${done.length})</span></div>
-        ${done.map(t=>`
-          <div class="list-item" style="opacity:0.45">
-            <div class="checkbox checked" onclick="toggleTaskPage('${t.id}')"></div>
-            <div class="list-item-content"><div class="list-item-title" style="text-decoration:line-through">${t.text}</div></div>
-            <button class="btn-danger" onclick="deleteTask('${t.id}')">✕</button>
-          </div>`).join('')||'<div class="empty-state"><p>No completed tasks yet</p></div>'}
-      </div>
-    </div>`;
+    <div class="card">
+      <div class="card-label">Recent Ideas</div>
+      ${ideas.length?ideas.map(i=>`
+      <div class="li">
+        <div class="li-body">
+          <div class="li-title">${i.text}</div>
+          <div class="li-sub">${i.cat||'Note'} · ${fd(i.at)}</div>
+        </div>
+      </div>`).join(''):`<div class="empty"><p>Nothing captured yet.</p></div>`}
+      <button class="btn-outline" style="margin-top:16px;width:100%;text-align:center;font-size:12px" onclick="go('diary','brain')">Open brain</button>
+    </div>
+  </div>
+  </div>`;
+}
+
+async function qcap(){
+  const inp=document.getElementById('qci');const cat=document.getElementById('qcc');
+  const txt=inp.value.trim();if(!txt)return;
+  const d=st.data;if(!d.diary)d.diary=S.def().diary;
+  if(cat.value==='task'){
+    const tasks=d.diary.planner.tasks||[];
+    tasks.unshift({id:uid(),text:txt,done:false,priority:'md',at:new Date().toISOString()});
+    await S.save('diary.planner.tasks',tasks);
+  }else{
+    const items=d.diary.brain.items||[];
+    items.unshift({id:uid(),text:txt,cat:cat.value,at:new Date().toISOString()});
+    await S.save('diary.brain.items',items);
+  }
+  st.data=S.get();inp.value='';render();toast('Captured','ok');
+}
+
+async function tglTask(id){
+  const tasks=st.data.diary.planner.tasks;const t=tasks.find(x=>x.id===id);
+  if(t){t.done=!t.done;await S.save('diary.planner.tasks',tasks);st.data=S.get();render()}
+}
+
+/* ── DIARY ── */
+function renderDiary(sub){
+  const subs={brain:dBrain,planner:dPlanner,goals:dGoals,journal:dJournal,notes:dNotes};
+  const nl={brain:'Brain',planner:'Planner',goals:'Goals',journal:'Journal',notes:'Notes'};
+  return`<div class="page">
+  <div class="ph"><div class="ph-title">Diary</div><div class="ph-sub">Brain · Planner · Goals · Journal · Notes</div></div>
+  <div class="tabs">${['brain','planner','goals','journal','notes'].map(s=>`<div class="tab ${sub===s?'on':''}" onclick="go('diary','${s}')">${nl[s]}</div>`).join('')}</div>
+  ${(subs[sub]||dBrain)()}
+  </div>`;
+}
+
+function dBrain(){
+  const items=(st.data?.diary?.brain?.items)||[];
+  const cats=(st.data?.diary?.brain?.cats)||[];
+  return`
+  <div class="card" style="margin-bottom:14px">
+    <div class="f-row">
+      <input class="inp grow" id="bi" placeholder="Capture a thought…">
+      <select class="sel" id="bc" style="width:140px">${cats.map(c=>`<option>${c}</option>`).join('')}</select>
+      <button class="btn" onclick="addIdea()">Add</button>
+    </div>
+  </div>
+  <div class="search-wrap"><span class="search-ico">⌕</span><input class="search-inp" id="bs" placeholder="Search ideas…" oninput="flt('cap-','bs')"></div>
+  ${items.length?items.map(i=>`
+  <div class="card-sm" style="margin-bottom:8px;display:flex;align-items:flex-start;gap:12px" id="cap-${i.id}">
+    <div style="flex:1">
+      <div style="font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;font-weight:500">${i.cat||'Note'}</div>
+      <div style="font-size:14px;color:var(--text);line-height:1.6;font-weight:300">${i.text}</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:6px">${fd(i.at)}</div>
+    </div>
+    <button class="btn-ghost" onclick="delIdea('${i.id}')">✕</button>
+  </div>`).join(''):'<div class="empty"><p>Nothing here yet.<br>Start capturing ideas.</p></div>'}`;
+}
+
+async function addIdea(){
+  const t=document.getElementById('bi').value.trim();if(!t)return;
+  const cat=document.getElementById('bc').value;
+  const items=st.data.diary.brain.items||[];
+  items.unshift({id:uid(),text:t,cat,at:new Date().toISOString()});
+  await S.save('diary.brain.items',items);st.data=S.get();go('diary','brain');toast('Added','ok');
+}
+async function delIdea(id){
+  const items=st.data.diary.brain.items.filter(x=>x.id!==id);
+  await S.save('diary.brain.items',items);st.data=S.get();go('diary','brain');
+}
+
+function dPlanner(){
+  const tasks=(st.data?.diary?.planner?.tasks)||[];
+  const pend=tasks.filter(t=>!t.done);const done=tasks.filter(t=>t.done);
+  return`
+  <div class="card" style="margin-bottom:14px">
+    <div class="f-row">
+      <input class="inp grow" id="tt" placeholder="New task…">
+      <select class="sel" id="tp" style="width:120px">
+        <option value="hi">High</option>
+        <option value="md" selected>Medium</option>
+        <option value="lo">Low</option>
+      </select>
+      <input class="inp" id="td" type="date" style="width:150px">
+      <button class="btn" onclick="addTask()">Add</button>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-label">Pending <span style="color:var(--text3)">${pend.length}</span></div>
+      ${pend.length?pend.map(t=>`
+      <div class="li">
+        <div class="cb" onclick="tglTP('${t.id}')"></div>
+        <div class="li-body">
+          <div class="li-title">${t.text}</div>
+          <div style="display:flex;gap:6px;margin-top:3px;align-items:center">
+            <span class="badge ${t.priority==='high'||t.priority==='hi'?'hi':t.priority==='lo'?'lo':'md'}">${t.priority}</span>
+            ${t.due?`<span class="li-sub">${fd(t.due)}</span>`:''}
+          </div>
+        </div>
+        <button class="btn-ghost" onclick="delTask('${t.id}')">✕</button>
+      </div>`).join(''):'<div class="empty"><p>All clear.</p></div>'}
+    </div>
+    <div class="card">
+      <div class="card-label">Done <span style="color:var(--text3)">${done.length}</span></div>
+      ${done.map(t=>`
+      <div class="li" style="opacity:.4">
+        <div class="cb on" onclick="tglTP('${t.id}')"></div>
+        <div class="li-body"><div class="li-title" style="text-decoration:line-through">${t.text}</div></div>
+        <button class="btn-ghost" onclick="delTask('${t.id}')">✕</button>
+      </div>`).join('')||'<div class="empty"><p>—</p></div>'}
+    </div>
+  </div>`;
 }
 
 async function addTask(){
-  const text=document.getElementById('t-text').value.trim();if(!text)return;
-  const tasks=appState.data.diary.planner.tasks||[];
-  tasks.unshift({id:uid(),text,done:false,priority:document.getElementById('t-pri').value,due:document.getElementById('t-due').value||null,createdAt:new Date().toISOString()});
-  await StorageService.saveData('diary.planner.tasks',tasks);
-  appState.data=StorageService.getData();navigate('diary','planner');showToast('Task added!','success');
+  const t=document.getElementById('tt').value.trim();if(!t)return;
+  const tasks=st.data.diary.planner.tasks||[];
+  tasks.unshift({id:uid(),text:t,done:false,priority:document.getElementById('tp').value,due:document.getElementById('td').value||null,at:new Date().toISOString()});
+  await S.save('diary.planner.tasks',tasks);st.data=S.get();go('diary','planner');toast('Task added','ok');
+}
+async function tglTP(id){
+  const tasks=st.data.diary.planner.tasks;const t=tasks.find(x=>x.id===id);
+  if(t){t.done=!t.done;await S.save('diary.planner.tasks',tasks);st.data=S.get();go('diary','planner')}
+}
+async function delTask(id){
+  const tasks=st.data.diary.planner.tasks.filter(x=>x.id!==id);
+  await S.save('diary.planner.tasks',tasks);st.data=S.get();go('diary','planner');
 }
 
-async function toggleTaskPage(id){
-  const tasks=appState.data.diary.planner.tasks;const t=tasks.find(x=>x.id===id);
-  if(t){t.done=!t.done;await StorageService.saveData('diary.planner.tasks',tasks);appState.data=StorageService.getData();navigate('diary','planner');}
-}
-
-async function deleteTask(id){
-  const tasks=appState.data.diary.planner.tasks.filter(t=>t.id!==id);
-  await StorageService.saveData('diary.planner.tasks',tasks);appState.data=StorageService.getData();navigate('diary','planner');
-}
-
-function renderGoals(){
-  const goals=appState.data?.diary?.goals||{};const lt=goals.longTerm||[];const st=goals.shortTerm||[];
-  return `
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">New Goal</div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <input class="input" id="g-text" placeholder="Describe your goal..." style="flex:1;min-width:200px">
-        <select class="select" id="g-type" style="width:150px">
-          <option value="longTerm">Long-Term</option>
-          <option value="shortTerm">Short-Term</option>
-        </select>
-        <input class="input" id="g-cat" placeholder="Category" style="width:140px">
-        <button class="btn" onclick="addGoal()">+ Add Goal</button>
-      </div>
+function dGoals(){
+  const g=st.data?.diary?.goals||{};const lt=g.lt||[];const st2=g.st||[];
+  return`
+  <div class="card" style="margin-bottom:14px">
+    <div class="f-row">
+      <input class="inp grow" id="gt" placeholder="Goal description…">
+      <select class="sel" id="gtype" style="width:140px">
+        <option value="lt">Long-term</option>
+        <option value="st">Short-term</option>
+      </select>
+      <input class="inp" id="gcat" placeholder="Category" style="width:130px">
+      <button class="btn" onclick="addGoal()">Add</button>
     </div>
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-title">Long-Term Goals</div>
-        ${lt.length?lt.map(g=>`
-          <div class="list-item">
-            <div style="flex:1">
-              <div class="list-item-title">${g.text}</div>
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
-                <span class="tag">${g.category||'General'}</span>
-                <span style="font-size:12px;color:var(--text2);font-weight:600">${g.progress||0}%</span>
-              </div>
-              <div class="progress-bar"><div class="progress-fill" style="width:${g.progress||0}%"></div></div>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:4px;margin-left:12px">
-              <button class="btn-ghost" onclick="updateGoalProgress('longTerm','${g.id}')" style="font-size:11px;padding:5px 10px">Edit %</button>
-              <button class="btn-danger" onclick="deleteGoal('longTerm','${g.id}')">✕</button>
-            </div>
-          </div>`).join(''):'<div class="empty-state"><p>No long-term goals yet</p></div>'}
-      </div>
-      <div class="card">
-        <div class="card-title">Short-Term Goals</div>
-        ${st.length?st.map(g=>`
-          <div class="list-item">
-            <div style="flex:1">
-              <div class="list-item-title">${g.text}</div>
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
-                <span class="tag">${g.category||'General'}</span>
-                <span style="font-size:12px;color:var(--text2);font-weight:600">${g.progress||0}%</span>
-              </div>
-              <div class="progress-bar"><div class="progress-fill" style="width:${g.progress||0}%;background:var(--green)"></div></div>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:4px;margin-left:12px">
-              <button class="btn-ghost" onclick="updateGoalProgress('shortTerm','${g.id}')" style="font-size:11px;padding:5px 10px">Edit %</button>
-              <button class="btn-danger" onclick="deleteGoal('shortTerm','${g.id}')">✕</button>
-            </div>
-          </div>`).join(''):'<div class="empty-state"><p>No short-term goals yet</p></div>'}
-      </div>
-    </div>`;
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-label">Long-term</div>
+      ${lt.length?lt.map(g=>`
+      <div class="li">
+        <div class="li-body">
+          <div class="li-title">${g.text}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+            <span style="font-size:11px;color:var(--text3)">${g.cat||'General'}</span>
+            <span style="font-size:11px;color:var(--text2)">${g.pct||0}%</span>
+          </div>
+          <div class="prog"><div class="prog-fill" style="width:${g.pct||0}%"></div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;margin-left:10px;flex-shrink:0">
+          <button class="btn-outline" style="font-size:10px;padding:4px 8px" onclick="editPct('lt','${g.id}')">%</button>
+          <button class="btn-ghost" onclick="delGoal('lt','${g.id}')">✕</button>
+        </div>
+      </div>`).join(''):'<div class="empty"><p>—</p></div>'}
+    </div>
+    <div class="card">
+      <div class="card-label">Short-term</div>
+      ${st2.length?st2.map(g=>`
+      <div class="li">
+        <div class="li-body">
+          <div class="li-title">${g.text}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+            <span style="font-size:11px;color:var(--text3)">${g.cat||'General'}</span>
+            <span style="font-size:11px;color:var(--text2)">${g.pct||0}%</span>
+          </div>
+          <div class="prog"><div class="prog-fill" style="width:${g.pct||0}%;background:var(--green)"></div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;margin-left:10px;flex-shrink:0">
+          <button class="btn-outline" style="font-size:10px;padding:4px 8px" onclick="editPct('st','${g.id}')">%</button>
+          <button class="btn-ghost" onclick="delGoal('st','${g.id}')">✕</button>
+        </div>
+      </div>`).join(''):'<div class="empty"><p>—</p></div>'}
+    </div>
+  </div>`;
 }
 
 async function addGoal(){
-  const text=document.getElementById('g-text').value.trim();if(!text)return;
-  const type=document.getElementById('g-type').value;
-  const cat=document.getElementById('g-cat').value.trim()||'General';
-  const goals=appState.data.diary.goals;
-  goals[type]=goals[type]||[];goals[type].push({id:uid(),text,category:cat,progress:0,createdAt:new Date().toISOString()});
-  await StorageService.saveData('diary.goals',goals);appState.data=StorageService.getData();navigate('diary','goals');showToast('Goal added!','success');
+  const t=document.getElementById('gt').value.trim();if(!t)return;
+  const type=document.getElementById('gtype').value;
+  const cat=document.getElementById('gcat').value.trim()||'General';
+  const goals=st.data.diary.goals;goals[type]=goals[type]||[];
+  goals[type].push({id:uid(),text:t,cat,pct:0,at:new Date().toISOString()});
+  await S.save('diary.goals',goals);st.data=S.get();go('diary','goals');toast('Goal added','ok');
+}
+async function delGoal(type,id){
+  const goals=st.data.diary.goals;goals[type]=goals[type].filter(x=>x.id!==id);
+  await S.save('diary.goals',goals);st.data=S.get();go('diary','goals');
+}
+async function editPct(type,id){
+  const v=prompt('Progress (0–100):');const n=parseInt(v);if(isNaN(n))return;
+  const goals=st.data.diary.goals;const g=goals[type].find(x=>x.id===id);
+  if(g){g.pct=Math.min(100,Math.max(0,n));await S.save('diary.goals',goals);st.data=S.get();go('diary','goals')}
 }
 
-async function deleteGoal(type,id){
-  const goals=appState.data.diary.goals;goals[type]=goals[type].filter(g=>g.id!==id);
-  await StorageService.saveData('diary.goals',goals);appState.data=StorageService.getData();navigate('diary','goals');
-}
-
-async function updateGoalProgress(type,id){
-  const p=prompt('Enter progress (0-100):');const val=parseInt(p);if(isNaN(val))return;
-  const goals=appState.data.diary.goals;const g=goals[type].find(x=>x.id===id);
-  if(g){g.progress=Math.min(100,Math.max(0,val));await StorageService.saveData('diary.goals',goals);appState.data=StorageService.getData();navigate('diary','goals');}
-}
-
-function renderJournal(){
-  const entries=(appState.data?.diary?.journal?.entries)||[];
+function dJournal(){
+  const entries=(st.data?.diary?.journal?.entries)||[];
   const today=new Date().toISOString().split('T')[0];
-  return `
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">New Journal Entry</div>
-      <div class="field"><label>Date</label><input class="input" id="j-date" type="date" value="${today}" style="width:200px"></div>
-      <div class="field"><label>Entry</label><textarea class="textarea" id="j-text" placeholder="Write freely..." style="min-height:130px"></textarea></div>
-      <button class="btn" onclick="addJournalEntry()">+ Save Entry</button>
+  return`
+  <div class="card" style="margin-bottom:14px">
+    <div class="f-row">
+      <input class="inp" id="jd" type="date" value="${today}" style="width:160px">
     </div>
-    <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="j-search" placeholder="Search journal..." oninput="filterJournal()"></div>
-    <div id="journal-list">
-    ${entries.length?entries.map(e=>`
-      <div class="card-sm" style="margin-bottom:10px" id="j-${e.id}">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-          <span style="font-size:13px;color:var(--accent);font-weight:700">${formatDate(e.date||e.createdAt)}</span>
-          <button class="btn-danger" onclick="deleteJournalEntry('${e.id}')">✕</button>
-        </div>
-        <div style="font-size:14px;color:var(--text2);line-height:1.8;white-space:pre-wrap">${e.text}</div>
-      </div>`).join(''):'<div class="empty-state"><div class="empty-state-icon">✍</div><p>No journal entries yet.<br>Start writing today.</p></div>'}
-    </div>`;
+    <textarea class="txa" id="jt" placeholder="Write freely…" style="min-height:120px"></textarea>
+    <button class="btn" style="margin-top:12px" onclick="addEntry()">Save entry</button>
+  </div>
+  <div class="search-wrap"><span class="search-ico">⌕</span><input class="search-inp" id="js" placeholder="Search journal…" oninput="flt('je-','js')"></div>
+  ${entries.length?entries.map(e=>`
+  <div class="card-sm" style="margin-bottom:8px" id="je-${e.id}">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <span style="font-size:12px;color:var(--gold);font-weight:500">${fd(e.date||e.at)}</span>
+      <button class="btn-ghost" onclick="delEntry('${e.id}')">✕</button>
+    </div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.8;font-weight:300;white-space:pre-wrap">${e.text}</div>
+  </div>`).join(''):'<div class="empty"><p>No entries yet.<br>Write your first one.</p></div>'}`;
 }
 
-async function addJournalEntry(){
-  const text=document.getElementById('j-text').value.trim();
-  const date=document.getElementById('j-date').value;if(!text)return;
-  const entries=appState.data.diary.journal.entries||[];
-  entries.unshift({id:uid(),text,date,createdAt:new Date().toISOString()});
-  await StorageService.saveData('diary.journal.entries',entries);appState.data=StorageService.getData();navigate('diary','journal');showToast('Entry saved!','success');
+async function addEntry(){
+  const t=document.getElementById('jt').value.trim();if(!t)return;
+  const entries=st.data.diary.journal.entries||[];
+  entries.unshift({id:uid(),text:t,date:document.getElementById('jd').value,at:new Date().toISOString()});
+  await S.save('diary.journal.entries',entries);st.data=S.get();go('diary','journal');toast('Saved','ok');
+}
+async function delEntry(id){
+  const entries=st.data.diary.journal.entries.filter(x=>x.id!==id);
+  await S.save('diary.journal.entries',entries);st.data=S.get();go('diary','journal');
 }
 
-async function deleteJournalEntry(id){
-  const entries=appState.data.diary.journal.entries.filter(e=>e.id!==id);
-  await StorageService.saveData('diary.journal.entries',entries);appState.data=StorageService.getData();navigate('diary','journal');
-}
-
-function filterJournal(){
-  const q=document.getElementById('j-search').value.toLowerCase();
-  document.querySelectorAll('[id^="j-"]').forEach(el=>{if(el.id==='j-search')return;el.style.display=el.textContent.toLowerCase().includes(q)?'':'none';});
-}
-
-function renderNotes(){
-  const notes=(appState.data?.diary?.notesVault?.notes)||[];
-  const folders=['General','Important','Research','Business'];
-  return `
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">New Note</div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <input class="input" id="n-title" placeholder="Note title..." style="flex:1;min-width:200px">
-        <select class="select" id="n-folder" style="width:150px">${folders.map(f=>`<option>${f}</option>`).join('')}</select>
+function dNotes(){
+  const notes=(st.data?.diary?.notes?.list)||[];
+  const folders=(st.data?.diary?.notes?.folders)||[];
+  return`
+  <div class="card" style="margin-bottom:14px">
+    <div class="f-row">
+      <input class="inp grow" id="nt" placeholder="Note title…">
+      <select class="sel" id="nf" style="width:140px">${folders.map(f=>`<option>${f}</option>`).join('')}</select>
+    </div>
+    <textarea class="txa" id="nb" placeholder="Content…" style="min-height:90px"></textarea>
+    <button class="btn" style="margin-top:12px" onclick="addNote()">Save note</button>
+  </div>
+  <div class="search-wrap"><span class="search-ico">⌕</span><input class="search-inp" id="ns" placeholder="Search notes…" oninput="flt('note-','ns')"></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px">
+  ${notes.length?notes.map(n=>`
+  <div class="card-sm" id="note-${n.id}">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+      <div>
+        <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px">${n.title}</div>
+        <span style="font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase">${n.folder}</span>
       </div>
-      <textarea class="textarea" id="n-body" placeholder="Note content..." style="margin-top:10px;min-height:100px"></textarea>
-      <button class="btn" style="margin-top:12px" onclick="addNote()">+ Save Note</button>
+      <button class="btn-ghost" onclick="delNote('${n.id}')">✕</button>
     </div>
-    <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="n-search" placeholder="Search notes..." oninput="filterNotes()"></div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px" id="notes-grid">
-    ${notes.length?notes.map(n=>`
-      <div class="card-sm" id="note-${n.id}">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
-          <div>
-            <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:5px">${n.title}</div>
-            <span class="tag">${n.folder||'General'}</span>
-          </div>
-          <button class="btn-danger" onclick="deleteNote('${n.id}')">✕</button>
-        </div>
-        <div style="font-size:13px;color:var(--text2);line-height:1.6;max-height:80px;overflow:hidden">${n.body}</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:10px">${formatDate(n.createdAt)}</div>
-      </div>`).join(''):'<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">📁</div><p>Notes vault is empty</p></div>'}
-    </div>`;
+    <div style="font-size:13px;color:var(--text3);line-height:1.6;font-weight:300;max-height:72px;overflow:hidden">${n.body}</div>
+    <div style="font-size:11px;color:var(--text3);margin-top:10px">${fd(n.at)}</div>
+  </div>`).join(''):'<div class="empty" style="grid-column:1/-1"><p>No notes yet.</p></div>'}
+  </div>`;
 }
 
 async function addNote(){
-  const title=document.getElementById('n-title').value.trim();const body=document.getElementById('n-body').value.trim();if(!title)return;
-  const notes=appState.data.diary.notesVault.notes||[];
-  notes.unshift({id:uid(),title,body,folder:document.getElementById('n-folder').value,createdAt:new Date().toISOString()});
-  await StorageService.saveData('diary.notesVault.notes',notes);appState.data=StorageService.getData();navigate('diary','notes');showToast('Note saved!','success');
+  const t=document.getElementById('nt').value.trim();if(!t)return;
+  const notes=st.data.diary.notes.list||[];
+  notes.unshift({id:uid(),title:t,body:document.getElementById('nb').value,folder:document.getElementById('nf').value,at:new Date().toISOString()});
+  await S.save('diary.notes.list',notes);st.data=S.get();go('diary','notes');toast('Note saved','ok');
+}
+async function delNote(id){
+  const notes=st.data.diary.notes.list.filter(x=>x.id!==id);
+  await S.save('diary.notes.list',notes);st.data=S.get();go('diary','notes');
 }
 
-async function deleteNote(id){
-  const notes=appState.data.diary.notesVault.notes.filter(n=>n.id!==id);
-  await StorageService.saveData('diary.notesVault.notes',notes);appState.data=StorageService.getData();navigate('diary','notes');
+/* ── DISCIPL SCREENS ── */
+function renderScreensMod(sub){
+  const d=st.data?.screens||{};
+  const scrs=d.screens||[];const leads=d.leads||[];
+  const active=scrs.filter(s=>s.status==='active').length;
+  const planned=scrs.filter(s=>s.status==='planned').length;
+  const aliv=leads.filter(l=>!['closed','rejected'].includes(l.stage)).length;
+  const fns={leads:sLeads,screens:sScreens,locker:sLocker,plan:sPlan};
+  const nl={leads:'Leads',screens:'Screens',locker:'Locker',plan:'Planning'};
+  return`<div class="page">
+  <div class="ph"><div class="ph-title">Discipl Screens</div><div class="ph-sub">Leads · Screens · Locker · Planning</div></div>
+  <div class="g4" style="margin-bottom:28px">
+    <div class="stat"><div class="stat-label">Screens</div><div class="stat-val gold">${scrs.length}</div></div>
+    <div class="stat"><div class="stat-label">Active</div><div class="stat-val green">${active}</div></div>
+    <div class="stat"><div class="stat-label">Planned</div><div class="stat-val">${planned}</div></div>
+    <div class="stat"><div class="stat-label">Leads</div><div class="stat-val">${aliv}</div></div>
+  </div>
+  <div class="tabs">${['leads','screens','locker','plan'].map(s=>`<div class="tab ${sub===s?'on':''}" onclick="go('screens','${s}')">${nl[s]}</div>`).join('')}</div>
+  ${(fns[sub]||sLeads)()}
+  </div>`;
 }
 
-function filterNotes(){
-  const q=document.getElementById('n-search').value.toLowerCase();
-  document.querySelectorAll('[id^="note-"]').forEach(el=>{el.style.display=el.textContent.toLowerCase().includes(q)?'':'none';});
-}
-
-function renderDisciples(sub){
-  const fns={leads:renderLeads,screens:renderScreens,locker:renderLocker,planning:renderPlanning};
-  const d=appState.data?.disciplScreens||{};
-  const screens=d.screens||[];const leads=d.leads||[];
-  const active=screens.filter(s=>s.status==='active').length;
-  const planned=screens.filter(s=>s.status==='planned').length;
-  const activeLeads=leads.filter(l=>l.stage==='new'||l.stage==='interested'||l.stage==='contacted').length;
-  return `
-    <div class="page-header">
-      <div class="page-title">📺 Discipl Screens</div>
-      <div class="page-sub">Leads · Screens · Locker · Planning</div>
-    </div>
-    <div class="grid-4" style="margin-bottom:26px">
-      <div class="metric"><div class="metric-label">Total Screens</div><div class="metric-value accent">${screens.length}</div></div>
-      <div class="metric"><div class="metric-label">Active</div><div class="metric-value green">${active}</div></div>
-      <div class="metric"><div class="metric-label">Planned</div><div class="metric-value amber">${planned}</div></div>
-      <div class="metric"><div class="metric-label">Active Leads</div><div class="metric-value">${activeLeads}</div></div>
-    </div>
-    <div class="tabs">
-      ${['leads','screens','locker','planning'].map(s=>`<div class="tab ${sub===s?'active':''}" onclick="navigate('discipl','${s}')">${{leads:'Leads',screens:'Screens',locker:'Locker',planning:'Planning'}[s]}</div>`).join('')}
-    </div>
-    ${(fns[sub]||renderLeads)()}`;
-}
-
-function renderLeads(){
-  const leads=(appState.data?.disciplScreens?.leads)||[];
+function sLeads(){
+  const leads=(st.data?.screens?.leads)||[];
   const stages=['new','contacted','interested','negotiating','closed','rejected'];
-  return `
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">Add Lead</div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <input class="input" id="ld-name" placeholder="Contact name" style="flex:1;min-width:150px">
-        <input class="input" id="ld-biz" placeholder="Business / Gym name" style="flex:1;min-width:150px">
-        <input class="input" id="ld-phone" placeholder="Phone" style="width:140px">
-        <input class="input" id="ld-email" placeholder="Email" style="width:180px">
-        <select class="select" id="ld-stage" style="width:140px">${stages.map(s=>`<option value="${s}">${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('')}</select>
-        <button class="btn" onclick="addLead()">+ Add Lead</button>
-      </div>
-      <textarea class="textarea" id="ld-notes" placeholder="Notes..." style="margin-top:10px;min-height:60px"></textarea>
+  return`
+  <div class="card" style="margin-bottom:14px">
+    <div class="f-row">
+      <input class="inp grow" id="ln" placeholder="Name">
+      <input class="inp grow" id="lb" placeholder="Business / Gym">
+      <input class="inp" id="lph" placeholder="Phone" style="width:140px">
+      <input class="inp" id="lem" placeholder="Email" style="width:170px">
+      <select class="sel" id="ls" style="width:130px">${stages.map(s=>`<option value="${s}">${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('')}</select>
+      <button class="btn" onclick="addLead()">Add</button>
     </div>
-    <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="ld-search" placeholder="Search leads..." oninput="filterLeads()"></div>
-    ${leads.length?`
-    <div class="card" id="leads-table" style="overflow-x:auto">
-      <table style="width:100%;border-collapse:collapse;min-width:600px">
-        <thead><tr style="border-bottom:1px solid var(--border)">
-          <th style="text-align:left;padding:10px 14px;font-size:11px;color:var(--text3);letter-spacing:1px;font-weight:700;text-transform:uppercase">Name</th>
-          <th style="text-align:left;padding:10px 14px;font-size:11px;color:var(--text3);letter-spacing:1px;font-weight:700;text-transform:uppercase">Business</th>
-          <th style="text-align:left;padding:10px 14px;font-size:11px;color:var(--text3);letter-spacing:1px;font-weight:700;text-transform:uppercase">Contact</th>
-          <th style="text-align:left;padding:10px 14px;font-size:11px;color:var(--text3);letter-spacing:1px;font-weight:700;text-transform:uppercase">Stage</th>
-          <th style="text-align:left;padding:10px 14px;font-size:11px;color:var(--text3);letter-spacing:1px;font-weight:700;text-transform:uppercase">Actions</th>
-        </tr></thead>
-        <tbody>
-        ${leads.map(l=>`
-          <tr style="border-bottom:1px solid var(--border);transition:background 0.15s" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background=''" id="lead-${l.id}">
-            <td style="padding:13px 14px;font-size:14px;color:#fff;font-weight:500">${l.name}</td>
-            <td style="padding:13px 14px;font-size:13px;color:var(--text2)">${l.business||'—'}</td>
-            <td style="padding:13px 14px;font-size:12px;color:var(--text3)">${l.phone||''} ${l.email||''}</td>
-            <td style="padding:13px 14px"><span class="stage ${l.stage}">${l.stage}</span></td>
-            <td style="padding:13px 14px">
-              <select class="select" style="width:130px;padding:5px 10px;font-size:12px" onchange="updateLeadStage('${l.id}',this.value)">
-                ${stages.map(s=>`<option value="${s}" ${s===l.stage?'selected':''}>${s}</option>`).join('')}
-              </select>
-              <button class="btn-danger" style="margin-left:8px" onclick="deleteLead('${l.id}')">✕</button>
-            </td>
-          </tr>`).join('')}
-        </tbody>
-      </table>
-    </div>`:'<div class="empty-state"><div class="empty-state-icon">👥</div><p>No leads yet.<br>Start adding contacts!</p></div>'}`;
+    <textarea class="txa" id="lnts" placeholder="Notes…" style="min-height:56px"></textarea>
+  </div>
+  <div class="search-wrap"><span class="search-ico">⌕</span><input class="search-inp" id="lsrch" placeholder="Search leads…" oninput="flt('lrow-','lsrch')"></div>
+  ${leads.length?`
+  <div class="card" style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse;min-width:560px">
+      <thead><tr style="border-bottom:1px solid var(--border)">
+        ${['Name','Business','Contact','Stage',''].map(h=>`<th style="text-align:left;padding:8px 14px;font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;font-weight:500">${h}</th>`).join('')}
+      </tr></thead>
+      <tbody>
+      ${leads.map(l=>`
+      <tr id="lrow-${l.id}" style="border-bottom:1px solid var(--border)">
+        <td style="padding:12px 14px;font-size:13px;color:var(--text)">${l.name}</td>
+        <td style="padding:12px 14px;font-size:13px;color:var(--text3)">${l.biz||'—'}</td>
+        <td style="padding:12px 14px;font-size:12px;color:var(--text3)">${[l.phone,l.email].filter(Boolean).join(' · ')||'—'}</td>
+        <td style="padding:12px 14px"><span class="badge ${l.stage}">${l.stage}</span></td>
+        <td style="padding:12px 14px;display:flex;gap:8px;align-items:center">
+          <select class="sel" style="padding:5px 10px;font-size:12px;width:120px" onchange="updStage('${l.id}',this.value)">
+            ${stages.map(s=>`<option value="${s}" ${s===l.stage?'selected':''}>${s}</option>`).join('')}
+          </select>
+          <button class="btn-ghost" onclick="delLead('${l.id}')">✕</button>
+        </td>
+      </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>`:'<div class="empty"><p>No leads yet.</p></div>'}`;
 }
 
 async function addLead(){
-  const name=document.getElementById('ld-name').value.trim();if(!name)return;
-  const leads=appState.data.disciplScreens.leads||[];
-  leads.unshift({id:uid(),name,business:document.getElementById('ld-biz').value,phone:document.getElementById('ld-phone').value,email:document.getElementById('ld-email').value,stage:document.getElementById('ld-stage').value,notes:document.getElementById('ld-notes').value,createdAt:new Date().toISOString()});
-  await StorageService.saveData('disciplScreens.leads',leads);appState.data=StorageService.getData();navigate('discipl','leads');showToast('Lead added!','success');
+  const name=document.getElementById('ln').value.trim();if(!name)return;
+  const leads=st.data.screens.leads||[];
+  leads.unshift({id:uid(),name,biz:document.getElementById('lb').value,phone:document.getElementById('lph').value,email:document.getElementById('lem').value,stage:document.getElementById('ls').value,notes:document.getElementById('lnts').value,at:new Date().toISOString()});
+  await S.save('screens.leads',leads);st.data=S.get();go('screens','leads');toast('Lead added','ok');
+}
+async function updStage(id,stage){
+  const leads=st.data.screens.leads;const l=leads.find(x=>x.id===id);
+  if(l){l.stage=stage;await S.save('screens.leads',leads);st.data=S.get();go('screens','leads');toast('Updated','ok')}
+}
+async function delLead(id){
+  const leads=st.data.screens.leads.filter(x=>x.id!==id);
+  await S.save('screens.leads',leads);st.data=S.get();go('screens','leads');
 }
 
-async function updateLeadStage(id,stage){
-  const leads=appState.data.disciplScreens.leads;const l=leads.find(x=>x.id===id);
-  if(l){l.stage=stage;await StorageService.saveData('disciplScreens.leads',leads);appState.data=StorageService.getData();navigate('discipl','leads');showToast('Stage updated','success');}
-}
-
-async function deleteLead(id){
-  const leads=appState.data.disciplScreens.leads.filter(l=>l.id!==id);
-  await StorageService.saveData('disciplScreens.leads',leads);appState.data=StorageService.getData();navigate('discipl','leads');
-}
-
-function filterLeads(){
-  const q=document.getElementById('ld-search').value.toLowerCase();
-  document.querySelectorAll('[id^="lead-"]').forEach(el=>{el.style.display=el.textContent.toLowerCase().includes(q)?'':'none';});
-}
-
-function renderScreens(){
-  const screens=(appState.data?.disciplScreens?.screens)||[];
+function sScreens(){
+  const scrs=(st.data?.screens?.screens)||[];
   const statuses=['planned','active','maintenance','removed'];
-  return `
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">Add Screen</div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <input class="input" id="sc-name" placeholder="Screen name" style="flex:1;min-width:150px">
-        <input class="input" id="sc-gym" placeholder="Gym name" style="flex:1;min-width:150px">
-        <input class="input" id="sc-loc" placeholder="Location / City" style="width:160px">
-        <select class="select" id="sc-status" style="width:140px">${statuses.map(s=>`<option value="${s}">${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('')}</select>
-        <input class="input" id="sc-date" type="date" style="width:160px">
-        <button class="btn" onclick="addScreen()">+ Add Screen</button>
-      </div>
-      <textarea class="textarea" id="sc-notes" placeholder="Notes..." style="margin-top:10px;min-height:60px"></textarea>
+  return`
+  <div class="card" style="margin-bottom:14px">
+    <div class="f-row">
+      <input class="inp grow" id="sn" placeholder="Screen name">
+      <input class="inp grow" id="sg" placeholder="Gym name">
+      <input class="inp" id="sl" placeholder="Location" style="width:150px">
+      <select class="sel" id="ss" style="width:130px">${statuses.map(s=>`<option value="${s}">${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('')}</select>
+      <input class="inp" id="sd" type="date" style="width:150px">
+      <button class="btn" onclick="addScreen()">Add</button>
     </div>
-    ${screens.length?`
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px">
-      ${screens.map(s=>`
-        <div class="card-sm">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
-            <div>
-              <div style="font-size:15px;font-weight:600;color:#fff;margin-bottom:6px">${s.name}</div>
-              <span class="screen-status ${s.status}">${s.status}</span>
-            </div>
-            <button class="btn-danger" onclick="deleteScreen('${s.id}')">✕</button>
-          </div>
-          <div style="font-size:13px;color:var(--text2);margin-bottom:5px">🏋 ${s.gym||'—'}</div>
-          <div style="font-size:13px;color:var(--text3)">📍 ${s.location||'—'}</div>
-          ${s.installDate?`<div style="font-size:12px;color:var(--text3);margin-top:8px">Installed: ${formatDate(s.installDate)}</div>`:''}
-          ${s.notes?`<div style="font-size:12px;color:var(--text3);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">${s.notes}</div>`:''}
-        </div>`).join('')}
-    </div>`:'<div class="empty-state"><div class="empty-state-icon">📺</div><p>No screens registered yet</p></div>'}`;
+    <textarea class="txa" id="snts" placeholder="Notes…" style="min-height:56px"></textarea>
+  </div>
+  ${scrs.length?`
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px">
+    ${scrs.map(s=>`
+    <div class="card-sm">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div>
+          <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:5px">${s.name}</div>
+          <span class="badge ${s.status}">${s.status}</span>
+        </div>
+        <button class="btn-ghost" onclick="delScreen('${s.id}')">✕</button>
+      </div>
+      <div style="font-size:12px;color:var(--text3);line-height:1.8">${s.gym||'—'}<br>${s.loc||'—'}${s.date?`<br><span style="color:var(--text3)">${fd(s.date)}</span>`:''}</div>
+      ${s.notes?`<div style="font-size:12px;color:var(--text3);margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">${s.notes}</div>`:''}
+    </div>`).join('')}
+  </div>`:'<div class="empty"><p>No screens added yet.</p></div>'}`;
 }
 
 async function addScreen(){
-  const name=document.getElementById('sc-name').value.trim();if(!name)return;
-  const screens=appState.data.disciplScreens.screens||[];
-  screens.push({id:uid(),name,gym:document.getElementById('sc-gym').value,location:document.getElementById('sc-loc').value,status:document.getElementById('sc-status').value,installDate:document.getElementById('sc-date').value||null,notes:document.getElementById('sc-notes').value,createdAt:new Date().toISOString()});
-  await StorageService.saveData('disciplScreens.screens',screens);appState.data=StorageService.getData();navigate('discipl','screens');showToast('Screen added!','success');
+  const name=document.getElementById('sn').value.trim();if(!name)return;
+  const scrs=st.data.screens.screens||[];
+  scrs.push({id:uid(),name,gym:document.getElementById('sg').value,loc:document.getElementById('sl').value,status:document.getElementById('ss').value,date:document.getElementById('sd').value||null,notes:document.getElementById('snts').value,at:new Date().toISOString()});
+  await S.save('screens.screens',scrs);st.data=S.get();go('screens','screens');toast('Screen added','ok');
+}
+async function delScreen(id){
+  const scrs=st.data.screens.screens.filter(x=>x.id!==id);
+  await S.save('screens.screens',scrs);st.data=S.get();go('screens','screens');
 }
 
-async function deleteScreen(id){
-  const screens=appState.data.disciplScreens.screens.filter(s=>s.id!==id);
-  await StorageService.saveData('disciplScreens.screens',screens);appState.data=StorageService.getData();navigate('discipl','screens');
-}
-
-function renderLocker(){
-  const locker=appState.data?.disciplScreens?.locker||{};
-  const notes=locker.notes||[];const ideas=locker.businessIdeas||[];const research=locker.research||[];
-  const allItems=[...notes.map(n=>({...n,_type:'Note'})),...research.map(r=>({...r,_type:'Research'})),...ideas.map(i=>({...i,_type:'Idea'}))];
-  return `
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-title">Add to Locker</div>
-        <div class="field"><label>Title</label><input class="input" id="lk-title" placeholder="Title..."></div>
-        <div class="field"><label>Content</label><textarea class="textarea" id="lk-body" placeholder="Notes, research, info..." style="min-height:90px"></textarea></div>
-        <select class="select" id="lk-type" style="margin-bottom:14px">
-          <option value="notes">Note</option>
-          <option value="research">Research</option>
-          <option value="businessIdeas">Business Idea</option>
-        </select>
-        <button class="btn" onclick="addToLocker()">+ Save to Locker</button>
-      </div>
-      <div class="card">
-        <div class="card-title">Locked Items <span style="color:var(--text3)">(${allItems.length})</span></div>
-        ${allItems.length?allItems.map(item=>`
-          <div class="list-item">
-            <div style="flex:1">
-              <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
-                <span class="tag accent">${item._type}</span>
-                <span style="font-size:14px;color:#fff;font-weight:500">${item.title}</span>
-              </div>
-              <div style="font-size:13px;color:var(--text3);line-height:1.5">${item.body||item.text||''}</div>
-            </div>
-            <button class="btn-danger" style="align-self:flex-start;margin-left:12px" onclick="deleteLockerItem('${item._type.toLowerCase()}','${item.id}')">✕</button>
-          </div>`).join(''):'<div class="empty-state"><p>Locker is empty</p></div>'}
-      </div>
-    </div>`;
-}
-
-async function addToLocker(){
-  const title=document.getElementById('lk-title').value.trim();const body=document.getElementById('lk-body').value.trim();if(!title)return;
-  const type=document.getElementById('lk-type').value;
-  const locker=appState.data.disciplScreens.locker;
-  locker[type]=locker[type]||[];locker[type].push({id:uid(),title,body,createdAt:new Date().toISOString()});
-  await StorageService.saveData('disciplScreens.locker',locker);appState.data=StorageService.getData();navigate('discipl','locker');showToast('Saved to locker!','success');
-}
-
-async function deleteLockerItem(type,id){
-  const typeMap={note:'notes',research:'research',idea:'businessIdeas'};
-  const key=typeMap[type]||type+'s';
-  const locker=appState.data.disciplScreens.locker;
-  const arr=locker[key];if(arr){const idx=arr.findIndex(x=>x.id===id);if(idx>-1)arr.splice(idx,1);}
-  await StorageService.saveData('disciplScreens.locker',locker);appState.data=StorageService.getData();navigate('discipl','locker');
-}
-
-function renderPlanning(){
-  const pb=appState.data?.disciplScreens?.planningBoard||{};
-  const tasks=pb.tasks||[];const opps=pb.opportunities||[];const followUps=pb.followUps||[];
-  return `
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">Add Planning Item</div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <input class="input" id="pb-text" placeholder="Item description..." style="flex:1;min-width:200px">
-        <select class="select" id="pb-type" style="width:170px">
-          <option value="tasks">Task</option>
-          <option value="opportunities">Opportunity</option>
-          <option value="followUps">Follow-up</option>
-        </select>
-        <button class="btn" onclick="addPlanItem()">+ Add</button>
+function sLocker(){
+  const items=(st.data?.screens?.locker?.items)||[];
+  const types=['Note','Research','Business Idea'];
+  return`
+  <div class="g2">
+    <div class="card">
+      <div class="card-label">Add item</div>
+      <div class="field" style="margin-bottom:12px"><input class="inp grow" id="lkt" placeholder="Title…" style="width:100%"></div>
+      <textarea class="txa" id="lkb" placeholder="Content…" style="min-height:90px;margin-bottom:12px"></textarea>
+      <div style="display:flex;gap:10px;align-items:center">
+        <select class="sel" id="lktype" style="flex:1">${types.map(t=>`<option>${t}</option>`).join('')}</select>
+        <button class="btn" onclick="addLock()">Save</button>
       </div>
     </div>
-    <div class="grid-3">
-      <div class="card">
-        <div class="card-title">Tasks <span style="color:var(--text3)">(${tasks.length})</span></div>
-        ${tasks.map(t=>`<div class="list-item"><div class="checkbox ${t.done?'checked':''}" onclick="togglePlanTask('${t.id}')"></div><div class="list-item-content"><div class="list-item-title" style="${t.done?'text-decoration:line-through;opacity:0.4':''}">${t.text}</div></div><button class="btn-danger" onclick="deletePlanItem('tasks','${t.id}')">✕</button></div>`).join('')||'<div class="empty-state"><p>No tasks</p></div>'}
-      </div>
-      <div class="card">
-        <div class="card-title">Opportunities <span style="color:var(--text3)">(${opps.length})</span></div>
-        ${opps.map(o=>`<div class="list-item"><div class="list-item-content"><div class="list-item-title">${o.text}</div><div class="list-item-sub">${formatDate(o.createdAt)}</div></div><button class="btn-danger" onclick="deletePlanItem('opportunities','${o.id}')">✕</button></div>`).join('')||'<div class="empty-state"><p>No opportunities</p></div>'}
-      </div>
-      <div class="card">
-        <div class="card-title">Follow-ups <span style="color:var(--text3)">(${followUps.length})</span></div>
-        ${followUps.map(f=>`<div class="list-item"><div class="list-item-content"><div class="list-item-title">${f.text}</div><div class="list-item-sub">${formatDate(f.createdAt)}</div></div><button class="btn-danger" onclick="deletePlanItem('followUps','${f.id}')">✕</button></div>`).join('')||'<div class="empty-state"><p>No follow-ups</p></div>'}
-      </div>
-    </div>`;
+    <div class="card">
+      <div class="card-label">Stored items <span style="color:var(--text3)">${items.length}</span></div>
+      ${items.length?items.map(i=>`
+      <div class="li">
+        <div class="li-body">
+          <div style="font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">${i.type}</div>
+          <div class="li-title">${i.title}</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:3px;font-weight:300">${i.body||''}</div>
+        </div>
+        <button class="btn-ghost" onclick="delLock('${i.id}')">✕</button>
+      </div>`).join(''):'<div class="empty"><p>Locker is empty.</p></div>'}
+    </div>
+  </div>`;
 }
 
-async function addPlanItem(){
-  const text=document.getElementById('pb-text').value.trim();if(!text)return;
-  const type=document.getElementById('pb-type').value;
-  const pb=appState.data.disciplScreens.planningBoard;
-  pb[type]=pb[type]||[];pb[type].push({id:uid(),text,done:false,createdAt:new Date().toISOString()});
-  await StorageService.saveData('disciplScreens.planningBoard',pb);appState.data=StorageService.getData();navigate('discipl','planning');showToast('Added!','success');
+async function addLock(){
+  const title=document.getElementById('lkt').value.trim();if(!title)return;
+  const items=st.data.screens.locker.items||[];
+  items.push({id:uid(),title,body:document.getElementById('lkb').value,type:document.getElementById('lktype').value,at:new Date().toISOString()});
+  await S.save('screens.locker.items',items);st.data=S.get();go('screens','locker');toast('Saved','ok');
+}
+async function delLock(id){
+  const items=st.data.screens.locker.items.filter(x=>x.id!==id);
+  await S.save('screens.locker.items',items);st.data=S.get();go('screens','locker');
 }
 
-async function togglePlanTask(id){
-  const pb=appState.data.disciplScreens.planningBoard;const t=pb.tasks.find(x=>x.id===id);
-  if(t){t.done=!t.done;await StorageService.saveData('disciplScreens.planningBoard',pb);appState.data=StorageService.getData();navigate('discipl','planning');}
+function sPlan(){
+  const p=st.data?.screens?.plan||{};
+  const tasks=p.tasks||[];const opps=p.opps||[];const fu=p.fu||[];
+  return`
+  <div class="card" style="margin-bottom:14px">
+    <div class="f-row">
+      <input class="inp grow" id="pt" placeholder="Item description…">
+      <select class="sel" id="ptype" style="width:150px">
+        <option value="tasks">Task</option>
+        <option value="opps">Opportunity</option>
+        <option value="fu">Follow-up</option>
+      </select>
+      <button class="btn" onclick="addPlan()">Add</button>
+    </div>
+  </div>
+  <div class="g3">
+    <div class="card">
+      <div class="card-label">Tasks <span style="color:var(--text3)">${tasks.length}</span></div>
+      ${tasks.map(t=>`<div class="li"><div class="cb ${t.done?'on':''}" onclick="tglPlan('${t.id}')"></div><div class="li-body"><div class="li-title" style="${t.done?'text-decoration:line-through;opacity:.35':''}">${t.text}</div></div><button class="btn-ghost" onclick="delPlan('tasks','${t.id}')">✕</button></div>`).join('')||'<div class="empty"><p>—</p></div>'}
+    </div>
+    <div class="card">
+      <div class="card-label">Opportunities <span style="color:var(--text3)">${opps.length}</span></div>
+      ${opps.map(o=>`<div class="li"><div class="li-body"><div class="li-title">${o.text}</div><div class="li-sub">${fd(o.at)}</div></div><button class="btn-ghost" onclick="delPlan('opps','${o.id}')">✕</button></div>`).join('')||'<div class="empty"><p>—</p></div>'}
+    </div>
+    <div class="card">
+      <div class="card-label">Follow-ups <span style="color:var(--text3)">${fu.length}</span></div>
+      ${fu.map(f=>`<div class="li"><div class="li-body"><div class="li-title">${f.text}</div><div class="li-sub">${fd(f.at)}</div></div><button class="btn-ghost" onclick="delPlan('fu','${f.id}')">✕</button></div>`).join('')||'<div class="empty"><p>—</p></div>'}
+    </div>
+  </div>`;
 }
 
-async function deletePlanItem(type,id){
-  const pb=appState.data.disciplScreens.planningBoard;pb[type]=pb[type].filter(x=>x.id!==id);
-  await StorageService.saveData('disciplScreens.planningBoard',pb);appState.data=StorageService.getData();navigate('discipl','planning');
+async function addPlan(){
+  const t=document.getElementById('pt').value.trim();if(!t)return;
+  const type=document.getElementById('ptype').value;
+  const p=st.data.screens.plan;p[type]=p[type]||[];
+  p[type].push({id:uid(),text:t,done:false,at:new Date().toISOString()});
+  await S.save('screens.plan',p);st.data=S.get();go('screens','plan');toast('Added','ok');
+}
+async function tglPlan(id){
+  const p=st.data.screens.plan;const t=p.tasks.find(x=>x.id===id);
+  if(t){t.done=!t.done;await S.save('screens.plan',p);st.data=S.get();go('screens','plan')}
+}
+async function delPlan(type,id){
+  const p=st.data.screens.plan;p[type]=p[type].filter(x=>x.id!==id);
+  await S.save('screens.plan',p);st.data=S.get();go('screens','plan');
 }
 
-if(checkLogin()){initApp();}else{renderLogin();}
+/* ── SEARCH FILTER ── */
+function flt(prefix,inputId){
+  const q=document.getElementById(inputId).value.toLowerCase();
+  document.querySelectorAll(`[id^="${prefix}"]`).forEach(el=>{el.style.display=el.textContent.toLowerCase().includes(q)?'':'none'});
+}
+
+/* ── INIT ── */
+if(chkAuth())boot();else showLogin();
 </script>
 </body>
 </html>
