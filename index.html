@@ -1,903 +1,1015 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LewinOS</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#0c0c0c;
-  --surface:#141414;
-  --surface2:#1a1a1a;
-  --surface3:#202020;
-  --border:#2a2a2a;
-  --border2:#333;
-  --text:#f0f0f0;
-  --text2:#888;
-  --text3:#555;
-  --gold:#c9a96e;
-  --gold-dim:#1a1408;
-  --green:#4ade80;
-  --green-dim:#0a1f12;
-  --red:#f87171;
-  --red-dim:#1f0a0a;
-  --blue:#60a5fa;
-  --blue-dim:#0a1220;
-  --amber:#fbbf24;
-  --r:6px;--rl:10px;
-}
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;-webkit-font-smoothing:antialiased}
-#app{min-height:100vh;display:flex;flex-direction:column}
-::-webkit-scrollbar{width:3px}
-::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-::placeholder{color:var(--text3)}
+import { useState, useEffect, useCallback, useRef } from "react";
 
-/* ── LOGIN ── */
-#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg)}
-.login-wrap{width:320px}
-.login-mark{font-size:13px;font-weight:500;color:var(--text3);letter-spacing:3px;text-transform:uppercase;margin-bottom:40px}
-.login-mark span{color:var(--gold)}
-.login-title{font-size:28px;font-weight:300;color:var(--text);letter-spacing:-0.5px;margin-bottom:8px;line-height:1.2}
-.login-title strong{font-weight:600}
-.login-sub{font-size:13px;color:var(--text3);margin-bottom:40px}
-.login-field{margin-bottom:16px}
-.login-field input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
-.login-field input:focus{border-color:var(--gold)}
-.login-remember{display:flex;align-items:center;gap:8px;margin-bottom:28px;font-size:13px;color:var(--text3);cursor:pointer}
-.login-remember input{accent-color:var(--gold);width:14px;height:14px}
-.login-btn{width:100%;background:var(--gold);border:none;border-radius:var(--r);padding:14px;color:#0c0c0c;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:0.5px;transition:opacity .2s}
-.login-btn:hover{opacity:.88}
-.login-err{font-size:12px;color:var(--red);margin-bottom:16px;display:none}
+// ─── STORAGE SERVICE ──────────────────────────────────────────────────────────
+const BIN_ID = "6a238aa1da38895dfe8f6a56";
+const API_KEY = "$2a$10$CIHnQinqYxnaRDkfr.tDBu0RXUclMvjiQMT4SIyMtt6WGNeooJW3S";
+const BASE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
-/* ── SHELL ── */
-#topbar{height:52px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:99}
-.t-logo{font-size:15px;font-weight:600;color:var(--text);cursor:pointer;letter-spacing:-0.3px}
-.t-logo em{font-style:normal;color:var(--gold)}
-.t-right{display:flex;align-items:center;gap:20px}
-.t-sync{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text3)}
-.t-dot{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0}
-.t-btn{background:none;border:none;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text3);cursor:pointer;transition:color .15s}
-.t-btn:hover{color:var(--text)}
-
-#main{display:flex;flex:1;overflow:hidden}
-
-/* ── SIDEBAR ── */
-#sidebar{width:200px;background:var(--bg);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 0;overflow-y:auto;flex-shrink:0}
-.s-label{font-size:10px;font-weight:500;color:var(--text3);letter-spacing:2px;text-transform:uppercase;padding:16px 24px 8px;display:block}
-.s-item{display:flex;align-items:center;gap:10px;padding:9px 24px;cursor:pointer;color:var(--text3);font-size:13px;font-weight:400;transition:color .15s;position:relative}
-.s-item:hover{color:var(--text2)}
-.s-item.active{color:var(--text)}
-.s-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);height:14px;width:2px;background:var(--gold);border-radius:0 2px 2px 0}
-.s-sub{padding-left:40px;font-size:12px;padding-top:7px;padding-bottom:7px}
-
-/* ── CONTENT ── */
-#content{flex:1;overflow-y:auto;background:var(--bg)}
-.page{padding:36px 40px;max-width:1100px}
-
-/* ── TYPOGRAPHY ── */
-.ph{margin-bottom:32px}
-.ph-title{font-size:22px;font-weight:500;color:var(--text);letter-spacing:-0.5px;margin-bottom:4px}
-.ph-sub{font-size:13px;color:var(--text3);font-weight:300}
-
-/* ── CARDS ── */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:24px}
-.card-sm{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px}
-.card-label{font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:20px}
-
-/* ── GRIDS ── */
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-
-/* ── STAT ── */
-.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:20px 22px}
-.stat-label{font-size:11px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;font-weight:500}
-.stat-val{font-size:32px;font-weight:300;color:var(--text);letter-spacing:-1px;line-height:1}
-.stat-val.gold{color:var(--gold)}
-.stat-val.green{color:var(--green)}
-.stat-val.amber{color:var(--amber)}
-
-/* ── MODULE TILES ── */
-.m-tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:24px 26px;cursor:pointer;transition:border-color .2s,background .2s}
-.m-tile:hover{border-color:var(--border2);background:var(--surface2)}
-.m-tile-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
-.m-tile-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
-.m-tile-arrow{color:var(--text3);font-size:16px;transition:transform .2s}
-.m-tile:hover .m-tile-arrow{transform:translate(2px,-2px)}
-.m-tile-name{font-size:15px;font-weight:500;color:var(--text);margin-bottom:4px}
-.m-tile-desc{font-size:12px;color:var(--text3);line-height:1.5;font-weight:300}
-.m-tile-foot{margin-top:16px;padding-top:16px;border-top:1px solid var(--border);font-size:12px;color:var(--text3)}
-.m-tile-foot span{color:var(--text2)}
-
-/* ── FORM ── */
-.f-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
-.inp{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s;min-width:0}
-.inp:focus{border-color:var(--gold)}
-.inp.grow{flex:1;min-width:160px}
-.sel{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;cursor:pointer}
-.txa{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;resize:vertical;min-height:72px;transition:border-color .2s}
-.txa:focus{border-color:var(--gold)}
-
-/* ── BUTTONS ── */
-.btn{display:inline-flex;align-items:center;gap:6px;background:var(--gold);border:none;border-radius:var(--r);padding:10px 18px;color:#0c0c0c;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .2s;white-space:nowrap}
-.btn:hover{opacity:.85}
-.btn-outline{background:none;border:1px solid var(--border2);color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;border-radius:var(--r);padding:8px 16px;cursor:pointer;transition:all .15s}
-.btn-outline:hover{border-color:var(--text3);color:var(--text)}
-.btn-ghost{background:none;border:none;color:var(--text3);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:color .15s;padding:0}
-.btn-ghost:hover{color:var(--red)}
-
-/* ── LIST ── */
-.li{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
-.li:last-child{border-bottom:none}
-.li-body{flex:1;min-width:0}
-.li-title{font-size:13px;color:var(--text);margin-bottom:2px;font-weight:400}
-.li-sub{font-size:11px;color:var(--text3)}
-
-/* ── CHECKBOX ── */
-.cb{width:16px;height:16px;border:1px solid var(--border2);border-radius:4px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;margin-top:1px}
-.cb:hover{border-color:var(--gold)}
-.cb.on{background:var(--gold);border-color:var(--gold)}
-.cb.on::after{content:'✓';color:#0c0c0c;font-size:9px;font-weight:700}
-
-/* ── TABS ── */
-.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:28px}
-.tab{padding:10px 0;margin-right:28px;font-size:13px;color:var(--text3);cursor:pointer;border-bottom:1px solid transparent;margin-bottom:-1px;transition:color .15s;font-weight:400}
-.tab:hover{color:var(--text2)}
-.tab.on{color:var(--text);border-bottom-color:var(--gold)}
-
-/* ── BADGES ── */
-.badge{display:inline-flex;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:500;letter-spacing:0.5px;text-transform:uppercase}
-.badge.hi{background:var(--red-dim);color:var(--red)}
-.badge.md{background:var(--gold-dim);color:var(--gold)}
-.badge.lo{background:var(--green-dim);color:var(--green)}
-.badge.new{background:var(--blue-dim);color:var(--blue)}
-.badge.contacted{background:#180d20;color:#c084fc}
-.badge.interested{background:var(--gold-dim);color:var(--gold)}
-.badge.negotiating{background:#1a1400;color:#fde68a}
-.badge.closed{background:var(--green-dim);color:var(--green)}
-.badge.rejected{background:var(--red-dim);color:var(--red)}
-.badge.planned{background:var(--blue-dim);color:var(--blue)}
-.badge.active{background:var(--green-dim);color:var(--green)}
-.badge.maintenance{background:var(--gold-dim);color:var(--amber)}
-.badge.removed{background:var(--red-dim);color:var(--red)}
-
-/* ── PROGRESS ── */
-.prog{background:var(--surface3);border-radius:20px;height:3px;margin-top:8px;overflow:hidden}
-.prog-fill{height:100%;border-radius:20px;background:var(--gold);transition:width .4s}
-
-/* ── SEARCH ── */
-.search-wrap{position:relative;margin-bottom:20px}
-.search-inp{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px 10px 36px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
-.search-inp:focus{border-color:var(--border2)}
-.search-ico{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px;pointer-events:none}
-
-/* ── EMPTY ── */
-.empty{text-align:center;padding:52px 20px}
-.empty p{font-size:13px;color:var(--text3);font-weight:300;line-height:1.7}
-
-/* ── QC BAR ── */
-.qc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px 20px;margin-bottom:28px;display:flex;gap:10px;align-items:center}
-.qc-hint{font-size:11px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;font-weight:500;white-space:nowrap}
-.qc-inp{flex:1;background:transparent;border:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none}
-
-/* ── TOAST ── */
-#toast{position:fixed;bottom:24px;right:28px;z-index:999;display:flex;flex-direction:column;gap:8px}
-.ti{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:11px 16px;font-size:12px;color:var(--text2);animation:tin .25s ease;font-weight:400}
-.ti.ok{color:var(--green)}
-@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-
-/* ── OFFLINE ── */
-#ob{background:var(--surface);border-bottom:1px solid var(--amber);padding:7px 28px;font-size:11px;color:var(--amber);display:none;font-weight:500;letter-spacing:0.5px}
-
-@media(max-width:720px){
-  #sidebar{display:none}
-  .g4{grid-template-columns:1fr 1fr}
-  .g3{grid-template-columns:1fr}
-  .g2{grid-template-columns:1fr}
-  .page{padding:20px}
-}
-</style>
-</head>
-<body>
-<div id="app"></div>
-<div id="toast"></div>
-<script>
-const BIN='6a238aa1da38895dfe8f6a56',KEY='$2a$10$CIHnQinqYxnaRDkfr.tDBu0RXUclMvjiQMT4SIyMtt6WGNeooJW3S',URL=`https://api.jsonbin.io/v3/b/${BIN}`;
-
-/* ── STORAGE ── */
-const S={
-  d:null,dirty:false,t:null,
-  async load(){
-    try{const r=await fetch(URL+'/latest',{headers:{'X-Master-Key':KEY,'X-Bin-Meta':'false'}});if(!r.ok)throw 0;const j=await r.json();this.d=j;ls('set','lw_cache',JSON.stringify(j));return j}
-    catch{const c=ls('get','lw_cache');if(c){this.d=JSON.parse(c);return this.d}this.d=this.def();return this.d}
+const INITIAL_DATA = {
+  meta: { version: "1.0.0", appName: "LewinOS", lastSync: null, createdAt: "2026-06-06" },
+  user: { username: "lewin", passwordHash: "lewin2026", rememberMe: false, preferences: { theme: "dark", dashboardLayout: "grid" } },
+  diary: {
+    brain: { captures: [], tags: [], categories: ["Business Ideas", "Content Ideas", "Trading Thoughts", "Random Notes"] },
+    planner: { tasks: [] },
+    goals: { longTerm: [], shortTerm: [], milestones: [] },
+    journal: { entries: [] },
+    notesVault: { notes: [], folders: [] }
   },
-  async save(path,val){
-    if(!this.d)await this.load();set(this.d,path,val);
-    if(!this.d.meta)this.d.meta={};this.d.meta.lastSync=new Date().toISOString();
-    ls('set','lw_cache',JSON.stringify(this.d));this.dirty=true;
-    clearTimeout(this.t);this.t=setTimeout(()=>this.sync(),1600);
+  disciplScreens: {
+    screens: [], leads: [],
+    locker: { notes: [], research: [], businessIdeas: [] },
+    planningBoard: { tasks: [], opportunities: [], followUps: [] }
   },
-  async sync(){
-    if(!this.dirty||!this.d)return;
-    try{const r=await fetch(URL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':KEY},body:JSON.stringify(this.d)});if(r.ok){this.dirty=false;toast('Saved','ok')}}
-    catch{toast('Offline — saved locally')}
-  },
-  get(p){return p?get(this.d,p):this.d},
-  def(){return{meta:{v:'1.0',app:'LewinOS',lastSync:null},user:{},diary:{brain:{items:[],cats:['Business','Content','Trading','Random']},planner:{tasks:[]},goals:{lt:[],st:[]},journal:{entries:[]},notes:{list:[],folders:['General','Important','Research','Business']}},screens:{screens:[],leads:[],locker:{items:[]},plan:{tasks:[],opps:[],fu:[]}},fm:{}}}
+  futureModules: {}
 };
 
-function ls(op,k,v){try{if(op==='set')localStorage.setItem(k,v);else return localStorage.getItem(k)}catch{}}
-function get(o,p){return p.split('.').reduce((a,k)=>a&&a[k]!==undefined?a[k]:null,o)}
-function set(o,p,v){const ks=p.split('.');let c=o;for(let i=0;i<ks.length-1;i++){if(!c[ks[i]]||typeof c[ks[i]]!=='object')c[ks[i]]={};c=c[ks[i]]}c[ks[ks.length-1]]=v}
-function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2)}
-function fd(d){if(!d)return'';return new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}
-function toast(msg,type=''){const t=document.getElementById('toast'),i=document.createElement('div');i.className=`ti ${type}`;i.textContent=msg;t.appendChild(i);setTimeout(()=>i.remove(),2800)}
+const StorageService = {
+  _localKey: "lewin_os_data",
+  _pendingSync: false,
+  _online: navigator.onLine,
 
-/* ── REGISTRY ── */
-const R={_m:{},reg(m){this._m[m.id]=m},all(){return Object.values(this._m)},get(id){return this._m[id]}};
-
-let st={page:'dash',sub:null,data:null};
-
-/* ── AUTH ── */
-function chkAuth(){const a=ls('get','lw_auth');if(a){const p=JSON.parse(a);if(p.ok){st.loggedIn=true;return true}}return false}
-
-function showLogin(){
-  document.getElementById('app').innerHTML=`
-  <div id="login-screen">
-    <div class="login-wrap">
-      <div class="login-mark">Lewin<span>OS</span></div>
-      <div class="login-title">Welcome <strong>back.</strong></div>
-      <div class="login-sub">Sign in to your personal OS</div>
-      <div class="login-err" id="lerr">Incorrect credentials</div>
-      <div class="login-field"><input id="lu" type="text" placeholder="Username" autocomplete="username"></div>
-      <div class="login-field"><input id="lp" type="password" placeholder="Password" autocomplete="current-password"></div>
-      <label class="login-remember"><input type="checkbox" id="lr"> Keep me signed in</label>
-      <button class="login-btn" onclick="doLogin()">Sign in →</button>
-    </div>
-  </div>`;
-  document.getElementById('lp').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
-}
-
-function doLogin(){
-  const u=document.getElementById('lu').value.trim().toLowerCase();
-  const p=document.getElementById('lp').value;
-  if(u==='lewin'&&p==='9890'){
-    st.loggedIn=true;
-    if(document.getElementById('lr').checked)ls('set','lw_auth',JSON.stringify({ok:true}));
-    boot();
-  }else document.getElementById('lerr').style.display='block';
-}
-function doLogout(){ls('set','lw_auth','{}');st.loggedIn=false;showLogin()}
-
-/* ── MODULES ── */
-R.reg({id:'diary',name:'Diary',icon:'○',desc:'Second brain, tasks, goals, journal',
-  sub:['brain','planner','goals','journal','notes'],
-  stats(d){const t=(d?.diary?.planner?.tasks||[]).filter(x=>!x.done).length;const i=(d?.diary?.brain?.items||[]).length;return`<span>${t}</span> tasks · <span>${i}</span> ideas`}
-});
-R.reg({id:'screens',name:'Discipl Screens',icon:'□',desc:'Leads, screens, locker, planning',
-  sub:['leads','screens','locker','plan'],
-  stats(d){const s=(d?.screens?.screens||[]).filter(x=>x.status==='active').length;const l=(d?.screens?.leads||[]).filter(x=>!['closed','rejected'].includes(x.stage)).length;return`<span>${s}</span> active · <span>${l}</span> leads`}
-});
-R.reg({id:'finance',name:'Finance',icon:'◇',desc:'Personal finance dashboard',
-  ext:true,url:'https://lewinfin.vercel.app',
-  stats(){return'External app'}
-});
-
-/* ── BOOT ── */
-async function boot(){
-  document.getElementById('app').innerHTML=`
-  <div id="ob">You are offline — changes saved locally</div>
-  <div id="topbar">
-    <div class="t-logo" onclick="go('dash')">Lewin<em>OS</em></div>
-    <div class="t-right">
-      <div class="t-sync"><div class="t-dot" id="tdot"></div><span id="tst" style="font-size:11px;color:var(--text3)">syncing…</span></div>
-      <button class="t-btn" onclick="fsync()">sync</button>
-      <button class="t-btn" onclick="doLogout()">sign out</button>
-    </div>
-  </div>
-  <div id="main">
-    <div id="sidebar"></div>
-    <div id="content"></div>
-  </div>`;
-
-  window.addEventListener('offline',()=>{document.getElementById('ob').style.display='block';setDot('#fbbf24')});
-  window.addEventListener('online',()=>{document.getElementById('ob').style.display='none';setDot('#4ade80');S.sync()});
-  function setDot(c){const d=document.getElementById('tdot');if(d)d.style.background=c}
-
-  toast('Loading…');
-  st.data=await S.load();
-  setDot('#4ade80');document.getElementById('tst').textContent='synced';
-  go('dash');
-}
-
-async function fsync(){st.data=await S.load();S.dirty=true;await S.sync();render();toast('Synced','ok')}
-
-/* ── NAV ── */
-function go(page,sub=null){
-  if(page==='finance'){window.open('https://lewinfin.vercel.app','_blank');return}
-  st.page=page;st.sub=sub||(page!=='dash'?R.get(page)?.sub?.[0]:null);
-  renderSidebar();render();
-}
-
-function renderSidebar(){
-  const mods=R.all();
-  let h=`<span class="s-label">Menu</span>
-  <div class="s-item ${st.page==='dash'?'active':''}" onclick="go('dash')">Dashboard</div>
-  <span class="s-label" style="margin-top:8px">Modules</span>`;
-  mods.forEach(m=>{
-    h+=`<div class="s-item ${st.page===m.id?'active':''}" onclick="go('${m.id}')">${m.name}</div>`;
-    if(st.page===m.id&&m.sub){
-      const nl={brain:'Brain',planner:'Planner',goals:'Goals',journal:'Journal',notes:'Notes',leads:'Leads',screens:'Screens',locker:'Locker',plan:'Planning'};
-      m.sub.forEach(s=>{h+=`<div class="s-item s-sub ${st.sub===s?'active':''}" onclick="go('${m.id}','${s}')">${nl[s]||s}</div>`});
+  async loadData() {
+    try {
+      const res = await fetch(`${BASE_URL}/latest`, { headers: { "X-Master-Key": API_KEY } });
+      if (!res.ok) throw new Error("Cloud fetch failed");
+      const json = await res.json();
+      const data = json.record || INITIAL_DATA;
+      localStorage.setItem(this._localKey, JSON.stringify(data));
+      return data;
+    } catch {
+      const local = localStorage.getItem(this._localKey);
+      return local ? JSON.parse(local) : { ...INITIAL_DATA };
     }
-  });
-  document.getElementById('sidebar').innerHTML=h;
-}
+  },
 
-function render(){
-  const c=document.getElementById('content');
-  if(st.page==='dash')c.innerHTML=renderDash();
-  else if(st.page==='diary')c.innerHTML=renderDiary(st.sub);
-  else if(st.page==='screens')c.innerHTML=renderScreensMod(st.sub);
-}
+  async saveData(data) {
+    const updated = { ...data, meta: { ...data.meta, lastSync: new Date().toISOString() } };
+    localStorage.setItem(this._localKey, JSON.stringify(updated));
+    if (!navigator.onLine) { this._pendingSync = true; return updated; }
+    try {
+      await fetch(BASE_URL, {
+        method: "PUT", headers: { "Content-Type": "application/json", "X-Master-Key": API_KEY },
+        body: JSON.stringify(updated)
+      });
+      this._pendingSync = false;
+    } catch { this._pendingSync = true; }
+    return updated;
+  },
 
-/* ── DASHBOARD ── */
-function renderDash(){
-  const d=st.data||{};const now=new Date();
-  const hr=now.getHours();const g=hr<12?'Morning':hr<17?'Afternoon':'Evening';
-  const tasks=(d.diary?.planner?.tasks||[]).filter(t=>!t.done).slice(0,5);
-  const ideas=(d.diary?.brain?.items||[]).slice(0,4);
-  const mods=R.all();
-
-  return`<div class="page">
-  <div class="ph" style="margin-bottom:36px">
-    <div class="ph-title">Good ${g}, Lewin.</div>
-    <div class="ph-sub">${now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})}</div>
-  </div>
-  <div class="qc">
-    <span class="qc-hint">Capture</span>
-    <input class="qc-inp" id="qci" type="text" placeholder="Drop a thought…">
-    <select id="qcc" class="sel" style="width:130px;background:transparent;border:none;font-size:12px;color:var(--text3)">
-      <option value="Random">Random</option>
-      <option value="Business">Business</option>
-      <option value="Content">Content</option>
-      <option value="Trading">Trading</option>
-      <option value="task">→ Task</option>
-    </select>
-    <button class="btn" style="padding:8px 16px;font-size:12px" onclick="qcap()">Add</button>
-  </div>
-  <div class="g3" style="margin-bottom:28px">
-    ${mods.map(m=>`
-    <div class="m-tile" onclick="go('${m.id}')">
-      <div class="m-tile-top">
-        <div class="m-tile-icon">${m.icon}</div>
-        <span class="m-tile-arrow">↗</span>
-      </div>
-      <div class="m-tile-name">${m.name}</div>
-      <div class="m-tile-desc">${m.desc}</div>
-      <div class="m-tile-foot">${m.stats(d)}</div>
-    </div>`).join('')}
-  </div>
-  <div class="g2">
-    <div class="card">
-      <div class="card-label">Pending Tasks</div>
-      ${tasks.length?tasks.map(t=>`
-      <div class="li">
-        <div class="cb ${t.done?'on':''}" onclick="tglTask('${t.id}')"></div>
-        <div class="li-body">
-          <div class="li-title">${t.text}</div>
-          <div style="display:flex;gap:6px;margin-top:4px;align-items:center">
-            ${t.priority?`<span class="badge ${t.priority==='high'?'hi':t.priority==='med'?'md':'lo'}">${t.priority}</span>`:''}
-            ${t.due?`<span class="li-sub">${fd(t.due)}</span>`:''}
-          </div>
-        </div>
-      </div>`).join(''):`<div class="empty"><p>No pending tasks.</p></div>`}
-      <button class="btn-outline" style="margin-top:16px;width:100%;text-align:center;font-size:12px" onclick="go('diary','planner')">All tasks</button>
-    </div>
-    <div class="card">
-      <div class="card-label">Recent Ideas</div>
-      ${ideas.length?ideas.map(i=>`
-      <div class="li">
-        <div class="li-body">
-          <div class="li-title">${i.text}</div>
-          <div class="li-sub">${i.cat||'Note'} · ${fd(i.at)}</div>
-        </div>
-      </div>`).join(''):`<div class="empty"><p>Nothing captured yet.</p></div>`}
-      <button class="btn-outline" style="margin-top:16px;width:100%;text-align:center;font-size:12px" onclick="go('diary','brain')">Open brain</button>
-    </div>
-  </div>
-  </div>`;
-}
-
-async function qcap(){
-  const inp=document.getElementById('qci');const cat=document.getElementById('qcc');
-  const txt=inp.value.trim();if(!txt)return;
-  const d=st.data;if(!d.diary)d.diary=S.def().diary;
-  if(cat.value==='task'){
-    const tasks=d.diary.planner.tasks||[];
-    tasks.unshift({id:uid(),text:txt,done:false,priority:'md',at:new Date().toISOString()});
-    await S.save('diary.planner.tasks',tasks);
-  }else{
-    const items=d.diary.brain.items||[];
-    items.unshift({id:uid(),text:txt,cat:cat.value,at:new Date().toISOString()});
-    await S.save('diary.brain.items',items);
+  getLocal() {
+    const local = localStorage.getItem(this._localKey);
+    return local ? JSON.parse(local) : { ...INITIAL_DATA };
   }
-  st.data=S.get();inp.value='';render();toast('Captured','ok');
-}
+};
 
-async function tglTask(id){
-  const tasks=st.data.diary.planner.tasks;const t=tasks.find(x=>x.id===id);
-  if(t){t.done=!t.done;await S.save('diary.planner.tasks',tasks);st.data=S.get();render()}
-}
+// ─── MODULE REGISTRY ──────────────────────────────────────────────────────────
+const MODULE_REGISTRY = [];
+function registerModule(mod) { MODULE_REGISTRY.push(mod); }
 
-/* ── DIARY ── */
-function renderDiary(sub){
-  const subs={brain:dBrain,planner:dPlanner,goals:dGoals,journal:dJournal,notes:dNotes};
-  const nl={brain:'Brain',planner:'Planner',goals:'Goals',journal:'Journal',notes:'Notes'};
-  return`<div class="page">
-  <div class="ph"><div class="ph-title">Diary</div><div class="ph-sub">Brain · Planner · Goals · Journal · Notes</div></div>
-  <div class="tabs">${['brain','planner','goals','journal','notes'].map(s=>`<div class="tab ${sub===s?'on':''}" onclick="go('diary','${s}')">${nl[s]}</div>`).join('')}</div>
-  ${(subs[sub]||dBrain)()}
-  </div>`;
-}
+// ─── ICONS ────────────────────────────────────────────────────────────────────
+const icons = {
+  brain: "◎", diary: "✦", screens: "▣", finance: "◈", tasks: "◻",
+  journal: "◑", goals: "△", notes: "◧", leads: "◉", settings: "⊞",
+  search: "⊙", plus: "+", x: "×", back: "←", check: "✓", edit: "✎",
+  trash: "⊘", lock: "◫", plan: "◈", save: "◆", home: "⌂"
+};
 
-function dBrain(){
-  const items=(st.data?.diary?.brain?.items)||[];
-  const cats=(st.data?.diary?.brain?.cats)||[];
-  return`
-  <div class="card" style="margin-bottom:14px">
-    <div class="f-row">
-      <input class="inp grow" id="bi" placeholder="Capture a thought…">
-      <select class="sel" id="bc" style="width:140px">${cats.map(c=>`<option>${c}</option>`).join('')}</select>
-      <button class="btn" onclick="addIdea()">Add</button>
-    </div>
+// ─── THEME & STYLES ───────────────────────────────────────────────────────────
+const G = {
+  bg: "#0A0A0B", surface: "#111113", card: "#18181C", border: "#2A2A30",
+  borderHover: "#3A3A45", accent: "#C8F04D", accentDim: "#8FAE2A",
+  text: "#F0F0F0", textSec: "#9090A0", textMuted: "#5A5A6A",
+  red: "#FF5050", green: "#4DFF91", amber: "#FFB84D", blue: "#4D9FFF",
+  purple: "#A084F0"
+};
+
+const css = `
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:${G.bg};color:${G.text};font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden}
+  ::-webkit-scrollbar{width:4px;height:4px}
+  ::-webkit-scrollbar-track{background:${G.bg}}
+  ::-webkit-scrollbar-thumb{background:${G.border};border-radius:2px}
+  input,textarea,select{background:${G.card};border:1px solid ${G.border};color:${G.text};font-family:'Syne',sans-serif;font-size:14px;padding:10px 14px;border-radius:8px;outline:none;width:100%}
+  input:focus,textarea:focus,select:focus{border-color:${G.accent}}
+  button{cursor:pointer;font-family:'Syne',sans-serif;border:none;outline:none}
+  select option{background:${G.card}}
+  .mono{font-family:'DM Mono',monospace}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+  .fade-in{animation:fadeIn 0.3s ease forwards}
+  .tag{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.5px;background:${G.border};color:${G.textSec}}
+  .tag.new{background:rgba(77,159,255,.15);color:${G.blue}}
+  .tag.active{background:rgba(77,255,145,.12);color:${G.green}}
+  .tag.warn{background:rgba(255,184,77,.12);color:${G.amber}}
+  .tag.danger{background:rgba(255,80,80,.12);color:${G.red}}
+  .tag.accent{background:rgba(200,240,77,.12);color:${G.accent}}
+`;
+
+// ─── BASE COMPONENTS ──────────────────────────────────────────────────────────
+const Btn = ({ children, onClick, variant = "ghost", style = {}, small }) => {
+  const base = { display: "inline-flex", alignItems: "center", gap: 6, padding: small ? "6px 12px" : "9px 18px", borderRadius: 8, fontSize: small ? 12 : 14, fontWeight: 600, fontFamily: "'Syne',sans-serif", transition: "all .15s", cursor: "pointer", letterSpacing: .3 };
+  const variants = {
+    accent: { background: G.accent, color: "#0A0A0B", border: "none" },
+    ghost: { background: "transparent", color: G.textSec, border: `1px solid ${G.border}` },
+    danger: { background: "rgba(255,80,80,.12)", color: G.red, border: `1px solid rgba(255,80,80,.2)` },
+    subtle: { background: G.card, color: G.text, border: `1px solid ${G.border}` },
+  };
+  return <button style={{ ...base, ...variants[variant], ...style }} onClick={onClick}>{children}</button>;
+};
+
+const Card = ({ children, style = {}, onClick }) => (
+  <div onClick={onClick} style={{ background: G.card, border: `1px solid ${G.border}`, borderRadius: 12, padding: "20px", cursor: onClick ? "pointer" : "default", transition: "border-color .2s", ...style }}
+    onMouseEnter={e => onClick && (e.currentTarget.style.borderColor = G.borderHover)}
+    onMouseLeave={e => onClick && (e.currentTarget.style.borderColor = G.border)}>
+    {children}
   </div>
-  <div class="search-wrap"><span class="search-ico">⌕</span><input class="search-inp" id="bs" placeholder="Search ideas…" oninput="flt('cap-','bs')"></div>
-  ${items.length?items.map(i=>`
-  <div class="card-sm" style="margin-bottom:8px;display:flex;align-items:flex-start;gap:12px" id="cap-${i.id}">
-    <div style="flex:1">
-      <div style="font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;font-weight:500">${i.cat||'Note'}</div>
-      <div style="font-size:14px;color:var(--text);line-height:1.6;font-weight:300">${i.text}</div>
-      <div style="font-size:11px;color:var(--text3);margin-top:6px">${fd(i.at)}</div>
-    </div>
-    <button class="btn-ghost" onclick="delIdea('${i.id}')">✕</button>
-  </div>`).join(''):'<div class="empty"><p>Nothing here yet.<br>Start capturing ideas.</p></div>'}`;
-}
+);
 
-async function addIdea(){
-  const t=document.getElementById('bi').value.trim();if(!t)return;
-  const cat=document.getElementById('bc').value;
-  const items=st.data.diary.brain.items||[];
-  items.unshift({id:uid(),text:t,cat,at:new Date().toISOString()});
-  await S.save('diary.brain.items',items);st.data=S.get();go('diary','brain');toast('Added','ok');
-}
-async function delIdea(id){
-  const items=st.data.diary.brain.items.filter(x=>x.id!==id);
-  await S.save('diary.brain.items',items);st.data=S.get();go('diary','brain');
-}
-
-function dPlanner(){
-  const tasks=(st.data?.diary?.planner?.tasks)||[];
-  const pend=tasks.filter(t=>!t.done);const done=tasks.filter(t=>t.done);
-  return`
-  <div class="card" style="margin-bottom:14px">
-    <div class="f-row">
-      <input class="inp grow" id="tt" placeholder="New task…">
-      <select class="sel" id="tp" style="width:120px">
-        <option value="hi">High</option>
-        <option value="md" selected>Medium</option>
-        <option value="lo">Low</option>
-      </select>
-      <input class="inp" id="td" type="date" style="width:150px">
-      <button class="btn" onclick="addTask()">Add</button>
-    </div>
-  </div>
-  <div class="g2">
-    <div class="card">
-      <div class="card-label">Pending <span style="color:var(--text3)">${pend.length}</span></div>
-      ${pend.length?pend.map(t=>`
-      <div class="li">
-        <div class="cb" onclick="tglTP('${t.id}')"></div>
-        <div class="li-body">
-          <div class="li-title">${t.text}</div>
-          <div style="display:flex;gap:6px;margin-top:3px;align-items:center">
-            <span class="badge ${t.priority==='high'||t.priority==='hi'?'hi':t.priority==='lo'?'lo':'md'}">${t.priority}</span>
-            ${t.due?`<span class="li-sub">${fd(t.due)}</span>`:''}
-          </div>
-        </div>
-        <button class="btn-ghost" onclick="delTask('${t.id}')">✕</button>
-      </div>`).join(''):'<div class="empty"><p>All clear.</p></div>'}
-    </div>
-    <div class="card">
-      <div class="card-label">Done <span style="color:var(--text3)">${done.length}</span></div>
-      ${done.map(t=>`
-      <div class="li" style="opacity:.4">
-        <div class="cb on" onclick="tglTP('${t.id}')"></div>
-        <div class="li-body"><div class="li-title" style="text-decoration:line-through">${t.text}</div></div>
-        <button class="btn-ghost" onclick="delTask('${t.id}')">✕</button>
-      </div>`).join('')||'<div class="empty"><p>—</p></div>'}
-    </div>
-  </div>`;
-}
-
-async function addTask(){
-  const t=document.getElementById('tt').value.trim();if(!t)return;
-  const tasks=st.data.diary.planner.tasks||[];
-  tasks.unshift({id:uid(),text:t,done:false,priority:document.getElementById('tp').value,due:document.getElementById('td').value||null,at:new Date().toISOString()});
-  await S.save('diary.planner.tasks',tasks);st.data=S.get();go('diary','planner');toast('Task added','ok');
-}
-async function tglTP(id){
-  const tasks=st.data.diary.planner.tasks;const t=tasks.find(x=>x.id===id);
-  if(t){t.done=!t.done;await S.save('diary.planner.tasks',tasks);st.data=S.get();go('diary','planner')}
-}
-async function delTask(id){
-  const tasks=st.data.diary.planner.tasks.filter(x=>x.id!==id);
-  await S.save('diary.planner.tasks',tasks);st.data=S.get();go('diary','planner');
-}
-
-function dGoals(){
-  const g=st.data?.diary?.goals||{};const lt=g.lt||[];const st2=g.st||[];
-  return`
-  <div class="card" style="margin-bottom:14px">
-    <div class="f-row">
-      <input class="inp grow" id="gt" placeholder="Goal description…">
-      <select class="sel" id="gtype" style="width:140px">
-        <option value="lt">Long-term</option>
-        <option value="st">Short-term</option>
-      </select>
-      <input class="inp" id="gcat" placeholder="Category" style="width:130px">
-      <button class="btn" onclick="addGoal()">Add</button>
-    </div>
-  </div>
-  <div class="g2">
-    <div class="card">
-      <div class="card-label">Long-term</div>
-      ${lt.length?lt.map(g=>`
-      <div class="li">
-        <div class="li-body">
-          <div class="li-title">${g.text}</div>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
-            <span style="font-size:11px;color:var(--text3)">${g.cat||'General'}</span>
-            <span style="font-size:11px;color:var(--text2)">${g.pct||0}%</span>
-          </div>
-          <div class="prog"><div class="prog-fill" style="width:${g.pct||0}%"></div></div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:4px;margin-left:10px;flex-shrink:0">
-          <button class="btn-outline" style="font-size:10px;padding:4px 8px" onclick="editPct('lt','${g.id}')">%</button>
-          <button class="btn-ghost" onclick="delGoal('lt','${g.id}')">✕</button>
-        </div>
-      </div>`).join(''):'<div class="empty"><p>—</p></div>'}
-    </div>
-    <div class="card">
-      <div class="card-label">Short-term</div>
-      ${st2.length?st2.map(g=>`
-      <div class="li">
-        <div class="li-body">
-          <div class="li-title">${g.text}</div>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
-            <span style="font-size:11px;color:var(--text3)">${g.cat||'General'}</span>
-            <span style="font-size:11px;color:var(--text2)">${g.pct||0}%</span>
-          </div>
-          <div class="prog"><div class="prog-fill" style="width:${g.pct||0}%;background:var(--green)"></div></div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:4px;margin-left:10px;flex-shrink:0">
-          <button class="btn-outline" style="font-size:10px;padding:4px 8px" onclick="editPct('st','${g.id}')">%</button>
-          <button class="btn-ghost" onclick="delGoal('st','${g.id}')">✕</button>
-        </div>
-      </div>`).join(''):'<div class="empty"><p>—</p></div>'}
-    </div>
-  </div>`;
-}
-
-async function addGoal(){
-  const t=document.getElementById('gt').value.trim();if(!t)return;
-  const type=document.getElementById('gtype').value;
-  const cat=document.getElementById('gcat').value.trim()||'General';
-  const goals=st.data.diary.goals;goals[type]=goals[type]||[];
-  goals[type].push({id:uid(),text:t,cat,pct:0,at:new Date().toISOString()});
-  await S.save('diary.goals',goals);st.data=S.get();go('diary','goals');toast('Goal added','ok');
-}
-async function delGoal(type,id){
-  const goals=st.data.diary.goals;goals[type]=goals[type].filter(x=>x.id!==id);
-  await S.save('diary.goals',goals);st.data=S.get();go('diary','goals');
-}
-async function editPct(type,id){
-  const v=prompt('Progress (0–100):');const n=parseInt(v);if(isNaN(n))return;
-  const goals=st.data.diary.goals;const g=goals[type].find(x=>x.id===id);
-  if(g){g.pct=Math.min(100,Math.max(0,n));await S.save('diary.goals',goals);st.data=S.get();go('diary','goals')}
-}
-
-function dJournal(){
-  const entries=(st.data?.diary?.journal?.entries)||[];
-  const today=new Date().toISOString().split('T')[0];
-  return`
-  <div class="card" style="margin-bottom:14px">
-    <div class="f-row">
-      <input class="inp" id="jd" type="date" value="${today}" style="width:160px">
-    </div>
-    <textarea class="txa" id="jt" placeholder="Write freely…" style="min-height:120px"></textarea>
-    <button class="btn" style="margin-top:12px" onclick="addEntry()">Save entry</button>
-  </div>
-  <div class="search-wrap"><span class="search-ico">⌕</span><input class="search-inp" id="js" placeholder="Search journal…" oninput="flt('je-','js')"></div>
-  ${entries.length?entries.map(e=>`
-  <div class="card-sm" style="margin-bottom:8px" id="je-${e.id}">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-      <span style="font-size:12px;color:var(--gold);font-weight:500">${fd(e.date||e.at)}</span>
-      <button class="btn-ghost" onclick="delEntry('${e.id}')">✕</button>
-    </div>
-    <div style="font-size:13px;color:var(--text2);line-height:1.8;font-weight:300;white-space:pre-wrap">${e.text}</div>
-  </div>`).join(''):'<div class="empty"><p>No entries yet.<br>Write your first one.</p></div>'}`;
-}
-
-async function addEntry(){
-  const t=document.getElementById('jt').value.trim();if(!t)return;
-  const entries=st.data.diary.journal.entries||[];
-  entries.unshift({id:uid(),text:t,date:document.getElementById('jd').value,at:new Date().toISOString()});
-  await S.save('diary.journal.entries',entries);st.data=S.get();go('diary','journal');toast('Saved','ok');
-}
-async function delEntry(id){
-  const entries=st.data.diary.journal.entries.filter(x=>x.id!==id);
-  await S.save('diary.journal.entries',entries);st.data=S.get();go('diary','journal');
-}
-
-function dNotes(){
-  const notes=(st.data?.diary?.notes?.list)||[];
-  const folders=(st.data?.diary?.notes?.folders)||[];
-  return`
-  <div class="card" style="margin-bottom:14px">
-    <div class="f-row">
-      <input class="inp grow" id="nt" placeholder="Note title…">
-      <select class="sel" id="nf" style="width:140px">${folders.map(f=>`<option>${f}</option>`).join('')}</select>
-    </div>
-    <textarea class="txa" id="nb" placeholder="Content…" style="min-height:90px"></textarea>
-    <button class="btn" style="margin-top:12px" onclick="addNote()">Save note</button>
-  </div>
-  <div class="search-wrap"><span class="search-ico">⌕</span><input class="search-inp" id="ns" placeholder="Search notes…" oninput="flt('note-','ns')"></div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px">
-  ${notes.length?notes.map(n=>`
-  <div class="card-sm" id="note-${n.id}">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
-      <div>
-        <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px">${n.title}</div>
-        <span style="font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase">${n.folder}</span>
+const Modal = ({ title, onClose, children, width = 560 }) => (
+  <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: 16 }}>
+    <div className="fade-in" style={{ background: G.surface, border: `1px solid ${G.border}`, borderRadius: 14, width: "100%", maxWidth: width, maxHeight: "85vh", overflow: "auto" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "18px 24px", borderBottom: `1px solid ${G.border}` }}>
+        <span style={{ fontWeight: 700, fontSize: 16 }}>{title}</span>
+        <button style={{ background: "none", border: "none", color: G.textSec, fontSize: 20, cursor: "pointer", lineHeight: 1 }} onClick={onClose}>{icons.x}</button>
       </div>
-      <button class="btn-ghost" onclick="delNote('${n.id}')">✕</button>
+      <div style={{ padding: 24 }}>{children}</div>
     </div>
-    <div style="font-size:13px;color:var(--text3);line-height:1.6;font-weight:300;max-height:72px;overflow:hidden">${n.body}</div>
-    <div style="font-size:11px;color:var(--text3);margin-top:10px">${fd(n.at)}</div>
-  </div>`).join(''):'<div class="empty" style="grid-column:1/-1"><p>No notes yet.</p></div>'}
-  </div>`;
-}
-
-async function addNote(){
-  const t=document.getElementById('nt').value.trim();if(!t)return;
-  const notes=st.data.diary.notes.list||[];
-  notes.unshift({id:uid(),title:t,body:document.getElementById('nb').value,folder:document.getElementById('nf').value,at:new Date().toISOString()});
-  await S.save('diary.notes.list',notes);st.data=S.get();go('diary','notes');toast('Note saved','ok');
-}
-async function delNote(id){
-  const notes=st.data.diary.notes.list.filter(x=>x.id!==id);
-  await S.save('diary.notes.list',notes);st.data=S.get();go('diary','notes');
-}
-
-/* ── DISCIPL SCREENS ── */
-function renderScreensMod(sub){
-  const d=st.data?.screens||{};
-  const scrs=d.screens||[];const leads=d.leads||[];
-  const active=scrs.filter(s=>s.status==='active').length;
-  const planned=scrs.filter(s=>s.status==='planned').length;
-  const aliv=leads.filter(l=>!['closed','rejected'].includes(l.stage)).length;
-  const fns={leads:sLeads,screens:sScreens,locker:sLocker,plan:sPlan};
-  const nl={leads:'Leads',screens:'Screens',locker:'Locker',plan:'Planning'};
-  return`<div class="page">
-  <div class="ph"><div class="ph-title">Discipl Screens</div><div class="ph-sub">Leads · Screens · Locker · Planning</div></div>
-  <div class="g4" style="margin-bottom:28px">
-    <div class="stat"><div class="stat-label">Screens</div><div class="stat-val gold">${scrs.length}</div></div>
-    <div class="stat"><div class="stat-label">Active</div><div class="stat-val green">${active}</div></div>
-    <div class="stat"><div class="stat-label">Planned</div><div class="stat-val">${planned}</div></div>
-    <div class="stat"><div class="stat-label">Leads</div><div class="stat-val">${aliv}</div></div>
   </div>
-  <div class="tabs">${['leads','screens','locker','plan'].map(s=>`<div class="tab ${sub===s?'on':''}" onclick="go('screens','${s}')">${nl[s]}</div>`).join('')}</div>
-  ${(fns[sub]||sLeads)()}
-  </div>`;
-}
+);
 
-function sLeads(){
-  const leads=(st.data?.screens?.leads)||[];
-  const stages=['new','contacted','interested','negotiating','closed','rejected'];
-  return`
-  <div class="card" style="margin-bottom:14px">
-    <div class="f-row">
-      <input class="inp grow" id="ln" placeholder="Name">
-      <input class="inp grow" id="lb" placeholder="Business / Gym">
-      <input class="inp" id="lph" placeholder="Phone" style="width:140px">
-      <input class="inp" id="lem" placeholder="Email" style="width:170px">
-      <select class="sel" id="ls" style="width:130px">${stages.map(s=>`<option value="${s}">${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('')}</select>
-      <button class="btn" onclick="addLead()">Add</button>
+const Field = ({ label, children, style = {} }) => (
+  <div style={{ marginBottom: 16, ...style }}>
+    <label style={{ display: "block", fontSize: 12, color: G.textSec, marginBottom: 6, fontWeight: 600, letterSpacing: .5, textTransform: "uppercase" }}>{label}</label>
+    {children}
+  </div>
+);
+
+const Empty = ({ msg }) => (
+  <div style={{ textAlign: "center", padding: "48px 24px", color: G.textMuted }}>
+    <div style={{ fontSize: 32, marginBottom: 12, opacity: .3 }}>◎</div>
+    <div style={{ fontSize: 14 }}>{msg}</div>
+  </div>
+);
+
+// ─── LOGIN ────────────────────────────────────────────────────────────────────
+function LoginScreen({ onLogin }) {
+  const [u, setU] = useState(""); const [p, setP] = useState(""); const [err, setErr] = useState(""); const [rem, setRem] = useState(false);
+  const handle = () => {
+    if (u === "lewin" && p === "lewin2026") { onLogin(rem); }
+    else setErr("Invalid credentials");
+  };
+  return (
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: G.bg }}>
+      <div className="fade-in" style={{ width: "100%", maxWidth: 380, padding: 16 }}>
+        <div style={{ marginBottom: 48 }}>
+          <div style={{ fontSize: 11, letterSpacing: 4, color: G.accentDim, marginBottom: 12, fontWeight: 600 }}>PERSONAL OS</div>
+          <div style={{ fontSize: 42, fontWeight: 800, letterSpacing: -2, color: G.text }}>Lewin<span style={{ color: G.accent }}>OS</span></div>
+        </div>
+        <Card>
+          <Field label="Username"><input value={u} onChange={e => setU(e.target.value)} placeholder="lewin" onKeyDown={e => e.key === "Enter" && handle()} /></Field>
+          <Field label="Password"><input type="password" value={p} onChange={e => setP(e.target.value)} placeholder="••••••••" onKeyDown={e => e.key === "Enter" && handle()} /></Field>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+            <input type="checkbox" id="rem" checked={rem} onChange={e => setRem(e.target.checked)} style={{ width: 16, height: 16, accentColor: G.accent }} />
+            <label htmlFor="rem" style={{ fontSize: 13, color: G.textSec, cursor: "pointer" }}>Remember me</label>
+          </div>
+          {err && <div style={{ color: G.red, fontSize: 13, marginBottom: 14 }}>{err}</div>}
+          <Btn variant="accent" onClick={handle} style={{ width: "100%", justifyContent: "center" }}>Enter OS</Btn>
+        </Card>
+      </div>
     </div>
-    <textarea class="txa" id="lnts" placeholder="Notes…" style="min-height:56px"></textarea>
-  </div>
-  <div class="search-wrap"><span class="search-ico">⌕</span><input class="search-inp" id="lsrch" placeholder="Search leads…" oninput="flt('lrow-','lsrch')"></div>
-  ${leads.length?`
-  <div class="card" style="overflow-x:auto">
-    <table style="width:100%;border-collapse:collapse;min-width:560px">
-      <thead><tr style="border-bottom:1px solid var(--border)">
-        ${['Name','Business','Contact','Stage',''].map(h=>`<th style="text-align:left;padding:8px 14px;font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;font-weight:500">${h}</th>`).join('')}
-      </tr></thead>
-      <tbody>
-      ${leads.map(l=>`
-      <tr id="lrow-${l.id}" style="border-bottom:1px solid var(--border)">
-        <td style="padding:12px 14px;font-size:13px;color:var(--text)">${l.name}</td>
-        <td style="padding:12px 14px;font-size:13px;color:var(--text3)">${l.biz||'—'}</td>
-        <td style="padding:12px 14px;font-size:12px;color:var(--text3)">${[l.phone,l.email].filter(Boolean).join(' · ')||'—'}</td>
-        <td style="padding:12px 14px"><span class="badge ${l.stage}">${l.stage}</span></td>
-        <td style="padding:12px 14px;display:flex;gap:8px;align-items:center">
-          <select class="sel" style="padding:5px 10px;font-size:12px;width:120px" onchange="updStage('${l.id}',this.value)">
-            ${stages.map(s=>`<option value="${s}" ${s===l.stage?'selected':''}>${s}</option>`).join('')}
-          </select>
-          <button class="btn-ghost" onclick="delLead('${l.id}')">✕</button>
-        </td>
-      </tr>`).join('')}
-      </tbody>
-    </table>
-  </div>`:'<div class="empty"><p>No leads yet.</p></div>'}`;
+  );
 }
 
-async function addLead(){
-  const name=document.getElementById('ln').value.trim();if(!name)return;
-  const leads=st.data.screens.leads||[];
-  leads.unshift({id:uid(),name,biz:document.getElementById('lb').value,phone:document.getElementById('lph').value,email:document.getElementById('lem').value,stage:document.getElementById('ls').value,notes:document.getElementById('lnts').value,at:new Date().toISOString()});
-  await S.save('screens.leads',leads);st.data=S.get();go('screens','leads');toast('Lead added','ok');
-}
-async function updStage(id,stage){
-  const leads=st.data.screens.leads;const l=leads.find(x=>x.id===id);
-  if(l){l.stage=stage;await S.save('screens.leads',leads);st.data=S.get();go('screens','leads');toast('Updated','ok')}
-}
-async function delLead(id){
-  const leads=st.data.screens.leads.filter(x=>x.id!==id);
-  await S.save('screens.leads',leads);st.data=S.get();go('screens','leads');
-}
+// ─── DIARY MODULE ─────────────────────────────────────────────────────────────
+function DiaryModule({ data, save }) {
+  const [tab, setTab] = useState("brain");
+  const diary = data.diary || INITIAL_DATA.diary;
 
-function sScreens(){
-  const scrs=(st.data?.screens?.screens)||[];
-  const statuses=['planned','active','maintenance','removed'];
-  return`
-  <div class="card" style="margin-bottom:14px">
-    <div class="f-row">
-      <input class="inp grow" id="sn" placeholder="Screen name">
-      <input class="inp grow" id="sg" placeholder="Gym name">
-      <input class="inp" id="sl" placeholder="Location" style="width:150px">
-      <select class="sel" id="ss" style="width:130px">${statuses.map(s=>`<option value="${s}">${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('')}</select>
-      <input class="inp" id="sd" type="date" style="width:150px">
-      <button class="btn" onclick="addScreen()">Add</button>
+  const tabs = [
+    { id: "brain", label: "Brain", icon: icons.brain },
+    { id: "planner", label: "Planner", icon: icons.tasks },
+    { id: "goals", label: "Goals", icon: icons.goals },
+    { id: "journal", label: "Journal", icon: icons.journal },
+    { id: "vault", label: "Vault", icon: icons.notes },
+  ];
+
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 4, marginBottom: 24, flexWrap: "wrap" }}>
+        {tabs.map(t => (
+          <button key={t.id} onClick={() => setTab(t.id)} style={{ padding: "7px 16px", borderRadius: 8, border: `1px solid ${tab === t.id ? G.accent : G.border}`, background: tab === t.id ? "rgba(200,240,77,.1)" : "transparent", color: tab === t.id ? G.accent : G.textSec, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'Syne',sans-serif" }}>
+            {t.icon} {t.label}
+          </button>
+        ))}
+      </div>
+      {tab === "brain" && <BrainTab diary={diary} save={d => save({ ...data, diary: d })} />}
+      {tab === "planner" && <PlannerTab diary={diary} save={d => save({ ...data, diary: d })} />}
+      {tab === "goals" && <GoalsTab diary={diary} save={d => save({ ...data, diary: d })} />}
+      {tab === "journal" && <JournalTab diary={diary} save={d => save({ ...data, diary: d })} />}
+      {tab === "vault" && <VaultTab diary={diary} save={d => save({ ...data, diary: d })} />}
     </div>
-    <textarea class="txa" id="snts" placeholder="Notes…" style="min-height:56px"></textarea>
-  </div>
-  ${scrs.length?`
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px">
-    ${scrs.map(s=>`
-    <div class="card-sm">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+  );
+}
+
+function BrainTab({ diary, save }) {
+  const [modal, setModal] = useState(false); const [q, setQ] = useState("");
+  const [form, setForm] = useState({ title: "", content: "", category: "Random Notes", tags: "" });
+  const captures = diary.brain?.captures || [];
+  const filtered = captures.filter(c => !q || c.title?.toLowerCase().includes(q.toLowerCase()) || c.content?.toLowerCase().includes(q.toLowerCase()));
+
+  const add = () => {
+    if (!form.title && !form.content) return;
+    const updated = { ...diary, brain: { ...diary.brain, captures: [{ id: Date.now(), ...form, tags: form.tags.split(",").map(t => t.trim()).filter(Boolean), date: new Date().toLocaleDateString() }, ...captures] } };
+    save(updated); setModal(false); setForm({ title: "", content: "", category: "Random Notes", tags: "" });
+  };
+  const del = id => save({ ...diary, brain: { ...diary.brain, captures: captures.filter(c => c.id !== id) } });
+
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
+        <input placeholder="Search captures..." value={q} onChange={e => setQ(e.target.value)} style={{ flex: 1 }} />
+        <Btn variant="accent" onClick={() => setModal(true)}>{icons.plus} Capture</Btn>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 }}>
+        {filtered.map(c => (
+          <Card key={c.id}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 4 }}>{c.title || "Untitled"}</div>
+                <span className="tag accent">{c.category}</span>
+              </div>
+              <button onClick={() => del(c.id)} style={{ background: "none", border: "none", color: G.textMuted, fontSize: 16, cursor: "pointer" }}>{icons.trash}</button>
+            </div>
+            <p style={{ fontSize: 13, color: G.textSec, lineHeight: 1.6, marginTop: 8 }}>{c.content}</p>
+            {c.tags?.length > 0 && <div style={{ marginTop: 10, display: "flex", gap: 4, flexWrap: "wrap" }}>{c.tags.map((t, i) => <span key={i} className="tag">{t}</span>)}</div>}
+            <div style={{ fontSize: 11, color: G.textMuted, marginTop: 10 }}>{c.date}</div>
+          </Card>
+        ))}
+      </div>
+      {filtered.length === 0 && <Empty msg="No captures yet. Start capturing ideas!" />}
+      {modal && (
+        <Modal title="New Capture" onClose={() => setModal(false)}>
+          <Field label="Title"><input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="Idea title..." /></Field>
+          <Field label="Content"><textarea value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} placeholder="Write your thought..." rows={4} style={{ resize: "vertical" }} /></Field>
+          <Field label="Category">
+            <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}>
+              {(diary.brain?.categories || []).map(c => <option key={c}>{c}</option>)}
+            </select>
+          </Field>
+          <Field label="Tags (comma separated)"><input value={form.tags} onChange={e => setForm({ ...form, tags: e.target.value })} placeholder="idea, important, follow-up" /></Field>
+          <Btn variant="accent" onClick={add}>{icons.save} Save Capture</Btn>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+function PlannerTab({ diary, save }) {
+  const [modal, setModal] = useState(false);
+  const [form, setForm] = useState({ title: "", priority: "medium", due: "", done: false });
+  const tasks = diary.planner?.tasks || [];
+  const toggle = id => save({ ...diary, planner: { tasks: tasks.map(t => t.id === id ? { ...t, done: !t.done } : t) } });
+  const del = id => save({ ...diary, planner: { tasks: tasks.filter(t => t.id !== id) } });
+  const add = () => {
+    if (!form.title) return;
+    save({ ...diary, planner: { tasks: [{ id: Date.now(), ...form, date: new Date().toLocaleDateString() }, ...tasks] } });
+    setModal(false); setForm({ title: "", priority: "medium", due: "", done: false });
+  };
+  const pColor = { high: G.red, medium: G.amber, low: G.green };
+  const pending = tasks.filter(t => !t.done); const done = tasks.filter(t => t.done);
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+        <div style={{ fontSize: 13, color: G.textSec }}>{pending.length} pending · {done.length} done</div>
+        <Btn variant="accent" onClick={() => setModal(true)}>{icons.plus} Task</Btn>
+      </div>
+      {tasks.length === 0 && <Empty msg="No tasks. Add your first task!" />}
+      {pending.map(t => (
+        <div key={t.id} style={{ display: "flex", gap: 12, alignItems: "center", padding: "12px 16px", background: G.card, borderRadius: 8, marginBottom: 8, border: `1px solid ${G.border}` }}>
+          <div onClick={() => toggle(t.id)} style={{ width: 20, height: 20, borderRadius: 5, border: `2px solid ${G.border}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }} />
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 600, fontSize: 14 }}>{t.title}</div>
+            {t.due && <div style={{ fontSize: 11, color: G.textMuted, marginTop: 2 }}>Due: {t.due}</div>}
+          </div>
+          <div style={{ width: 8, height: 8, borderRadius: "50%", background: pColor[t.priority], flexShrink: 0 }} title={t.priority} />
+          <button onClick={() => del(t.id)} style={{ background: "none", border: "none", color: G.textMuted, cursor: "pointer", fontSize: 14 }}>{icons.trash}</button>
+        </div>
+      ))}
+      {done.length > 0 && <div style={{ marginTop: 24 }}>
+        <div style={{ fontSize: 12, color: G.textMuted, letterSpacing: 1, marginBottom: 12, fontWeight: 600 }}>COMPLETED</div>
+        {done.map(t => (
+          <div key={t.id} style={{ display: "flex", gap: 12, alignItems: "center", padding: "10px 16px", background: G.card, borderRadius: 8, marginBottom: 6, border: `1px solid ${G.border}`, opacity: .5 }}>
+            <div onClick={() => toggle(t.id)} style={{ width: 20, height: 20, borderRadius: 5, border: `2px solid ${G.accent}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(200,240,77,.2)", color: G.accent, fontSize: 12, flexShrink: 0 }}>{icons.check}</div>
+            <span style={{ fontSize: 14, textDecoration: "line-through", flex: 1 }}>{t.title}</span>
+            <button onClick={() => del(t.id)} style={{ background: "none", border: "none", color: G.textMuted, cursor: "pointer" }}>{icons.trash}</button>
+          </div>
+        ))}
+      </div>}
+      {modal && (
+        <Modal title="New Task" onClose={() => setModal(false)}>
+          <Field label="Task"><input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="What needs to be done?" /></Field>
+          <Field label="Priority">
+            <select value={form.priority} onChange={e => setForm({ ...form, priority: e.target.value })}>
+              <option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option>
+            </select>
+          </Field>
+          <Field label="Due Date"><input type="date" value={form.due} onChange={e => setForm({ ...form, due: e.target.value })} /></Field>
+          <Btn variant="accent" onClick={add}>{icons.save} Add Task</Btn>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+function GoalsTab({ diary, save }) {
+  const [modal, setModal] = useState(false); const [type, setType] = useState("longTerm");
+  const [form, setForm] = useState({ title: "", description: "", category: "", progress: 0 });
+  const goals = diary.goals || {};
+  const all = [...(goals.longTerm || []).map(g => ({ ...g, type: "longTerm" })), ...(goals.shortTerm || []).map(g => ({ ...g, type: "shortTerm" }))];
+  const add = () => {
+    if (!form.title) return;
+    const newGoal = { id: Date.now(), ...form, date: new Date().toLocaleDateString() };
+    save({ ...diary, goals: { ...goals, [type]: [...(goals[type] || []), newGoal] } });
+    setModal(false); setForm({ title: "", description: "", category: "", progress: 0 });
+  };
+  const del = (id, t) => save({ ...diary, goals: { ...goals, [t]: (goals[t] || []).filter(g => g.id !== id) } });
+  const updateProgress = (id, t, val) => save({ ...diary, goals: { ...goals, [t]: (goals[t] || []).map(g => g.id === id ? { ...g, progress: val } : g) } });
+
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 20 }}>
+        <Btn variant="accent" onClick={() => setModal(true)}>{icons.plus} Goal</Btn>
+      </div>
+      {all.length === 0 && <Empty msg="Set your first goal!" />}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 }}>
+        {all.map(g => (
+          <Card key={g.id}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+              <div>
+                <span className={`tag ${g.type === "longTerm" ? "accent" : "new"}`}>{g.type === "longTerm" ? "Long-term" : "Short-term"}</span>
+                {g.category && <span className="tag" style={{ marginLeft: 4 }}>{g.category}</span>}
+              </div>
+              <button onClick={() => del(g.id, g.type)} style={{ background: "none", border: "none", color: G.textMuted, cursor: "pointer" }}>{icons.trash}</button>
+            </div>
+            <div style={{ fontWeight: 700, fontSize: 15, margin: "10px 0 6px" }}>{g.title}</div>
+            {g.description && <p style={{ fontSize: 13, color: G.textSec, lineHeight: 1.6, marginBottom: 12 }}>{g.description}</p>}
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ flex: 1, height: 4, background: G.border, borderRadius: 2, overflow: "hidden" }}>
+                <div style={{ height: "100%", width: `${g.progress || 0}%`, background: G.accent, borderRadius: 2, transition: "width .3s" }} />
+              </div>
+              <input type="number" min={0} max={100} value={g.progress || 0}
+                onChange={e => updateProgress(g.id, g.type, Math.min(100, Math.max(0, +e.target.value)))}
+                style={{ width: 50, padding: "4px 8px", fontSize: 12, textAlign: "center" }} />
+              <span style={{ fontSize: 11, color: G.textSec }}>%</span>
+            </div>
+          </Card>
+        ))}
+      </div>
+      {modal && (
+        <Modal title="New Goal" onClose={() => setModal(false)}>
+          <Field label="Type">
+            <select value={type} onChange={e => setType(e.target.value)}>
+              <option value="longTerm">Long-term</option><option value="shortTerm">Short-term</option>
+            </select>
+          </Field>
+          <Field label="Goal"><input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="What do you want to achieve?" /></Field>
+          <Field label="Description"><textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Details..." rows={3} style={{ resize: "vertical" }} /></Field>
+          <Field label="Category"><input value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} placeholder="Health, Business, Finance..." /></Field>
+          <Btn variant="accent" onClick={add}>{icons.save} Set Goal</Btn>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+function JournalTab({ diary, save }) {
+  const [modal, setModal] = useState(false); const [view, setView] = useState(null); const [q, setQ] = useState("");
+  const [form, setForm] = useState({ title: "", content: "", mood: "neutral" });
+  const entries = diary.journal?.entries || [];
+  const filtered = entries.filter(e => !q || e.title?.toLowerCase().includes(q.toLowerCase()) || e.content?.toLowerCase().includes(q.toLowerCase()));
+  const add = () => {
+    if (!form.content) return;
+    save({ ...diary, journal: { entries: [{ id: Date.now(), ...form, date: new Date().toLocaleDateString(), time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }, ...entries] } });
+    setModal(false); setForm({ title: "", content: "", mood: "neutral" });
+  };
+  const del = id => save({ ...diary, journal: { entries: entries.filter(e => e.id !== id) } });
+  const moodColor = { great: G.green, good: G.blue, neutral: G.textSec, bad: G.amber, awful: G.red };
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
+        <input placeholder="Search entries..." value={q} onChange={e => setQ(e.target.value)} style={{ flex: 1 }} />
+        <Btn variant="accent" onClick={() => setModal(true)}>{icons.plus} Entry</Btn>
+      </div>
+      {filtered.length === 0 && <Empty msg="No journal entries yet." />}
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {filtered.map(e => (
+          <Card key={e.id} onClick={() => setView(e)} style={{ cursor: "pointer" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 700, fontSize: 15 }}>{e.title || "Untitled Entry"}</div>
+                <p style={{ fontSize: 13, color: G.textSec, marginTop: 6, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{e.content}</p>
+              </div>
+              <div style={{ textAlign: "right", marginLeft: 16, flexShrink: 0 }}>
+                <div style={{ fontSize: 11, color: G.textMuted }}>{e.date}</div>
+                <div style={{ fontSize: 11, color: G.textMuted }}>{e.time}</div>
+                <div style={{ width: 8, height: 8, borderRadius: "50%", background: moodColor[e.mood] || G.textSec, marginLeft: "auto", marginTop: 6 }} />
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+      {view && (
+        <Modal title={view.title || "Journal Entry"} onClose={() => setView(null)} width={640}>
+          <div style={{ fontSize: 12, color: G.textMuted, marginBottom: 16 }}>{view.date} · {view.time}</div>
+          <p style={{ fontSize: 15, lineHeight: 1.8, color: G.text, whiteSpace: "pre-wrap" }}>{view.content}</p>
+          <div style={{ marginTop: 20, display: "flex", gap: 8 }}>
+            <button onClick={() => { del(view.id); setView(null); }} style={{ background: "rgba(255,80,80,.1)", border: "1px solid rgba(255,80,80,.2)", color: G.red, padding: "6px 14px", borderRadius: 7, cursor: "pointer", fontSize: 13, fontFamily: "'Syne',sans-serif" }}>{icons.trash} Delete</button>
+          </div>
+        </Modal>
+      )}
+      {modal && (
+        <Modal title="New Journal Entry" onClose={() => setModal(false)} width={640}>
+          <Field label="Title"><input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="Entry title..." /></Field>
+          <Field label="Mood">
+            <select value={form.mood} onChange={e => setForm({ ...form, mood: e.target.value })}>
+              {["great", "good", "neutral", "bad", "awful"].map(m => <option key={m}>{m}</option>)}
+            </select>
+          </Field>
+          <Field label="Entry">
+            <textarea value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} placeholder="Write your thoughts..." rows={8} style={{ resize: "vertical" }} />
+          </Field>
+          <Btn variant="accent" onClick={add}>{icons.save} Save Entry</Btn>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+function VaultTab({ diary, save }) {
+  const [modal, setModal] = useState(false); const [view, setView] = useState(null); const [q, setQ] = useState("");
+  const [form, setForm] = useState({ title: "", content: "", folder: "General" });
+  const notes = diary.notesVault?.notes || [];
+  const folders = ["General", ...(diary.notesVault?.folders || []).filter(f => f !== "General")];
+  const filtered = notes.filter(n => !q || n.title?.toLowerCase().includes(q.toLowerCase()) || n.content?.toLowerCase().includes(q.toLowerCase()));
+  const add = () => {
+    if (!form.title) return;
+    save({ ...diary, notesVault: { ...diary.notesVault, notes: [{ id: Date.now(), ...form, date: new Date().toLocaleDateString() }, ...notes] } });
+    setModal(false); setForm({ title: "", content: "", folder: "General" });
+  };
+  const del = id => save({ ...diary, notesVault: { ...diary.notesVault, notes: notes.filter(n => n.id !== id) } });
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
+        <input placeholder="Search vault..." value={q} onChange={e => setQ(e.target.value)} style={{ flex: 1 }} />
+        <Btn variant="accent" onClick={() => setModal(true)}>{icons.plus} Note</Btn>
+      </div>
+      {filtered.length === 0 && <Empty msg="Vault is empty. Start storing important info!" />}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 12 }}>
+        {filtered.map(n => (
+          <Card key={n.id} onClick={() => setView(n)} style={{ cursor: "pointer" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+              <span className="tag">{n.folder}</span>
+              <button onClick={e => { e.stopPropagation(); del(n.id); }} style={{ background: "none", border: "none", color: G.textMuted, cursor: "pointer" }}>{icons.trash}</button>
+            </div>
+            <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 6 }}>{n.title}</div>
+            <p style={{ fontSize: 13, color: G.textSec, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical" }}>{n.content}</p>
+            <div style={{ fontSize: 11, color: G.textMuted, marginTop: 10 }}>{n.date}</div>
+          </Card>
+        ))}
+      </div>
+      {view && (
+        <Modal title={view.title} onClose={() => setView(null)} width={640}>
+          <span className="tag" style={{ marginBottom: 16, display: "inline-block" }}>{view.folder}</span>
+          <p style={{ fontSize: 15, lineHeight: 1.8, color: G.text, whiteSpace: "pre-wrap", marginTop: 12 }}>{view.content}</p>
+          <div style={{ fontSize: 11, color: G.textMuted, marginTop: 16 }}>{view.date}</div>
+        </Modal>
+      )}
+      {modal && (
+        <Modal title="New Note" onClose={() => setModal(false)}>
+          <Field label="Title"><input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="Note title..." /></Field>
+          <Field label="Folder">
+            <select value={form.folder} onChange={e => setForm({ ...form, folder: e.target.value })}>
+              {folders.map(f => <option key={f}>{f}</option>)}
+            </select>
+          </Field>
+          <Field label="Content"><textarea value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} placeholder="Write your note..." rows={6} style={{ resize: "vertical" }} /></Field>
+          <Btn variant="accent" onClick={add}>{icons.save} Save Note</Btn>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+// ─── DISCIPL SCREENS MODULE ───────────────────────────────────────────────────
+function DisciplModule({ data, save }) {
+  const [tab, setTab] = useState("dashboard");
+  const ds = data.disciplScreens || INITIAL_DATA.disciplScreens;
+  const tabs = [
+    { id: "dashboard", label: "Dashboard" }, { id: "leads", label: "Leads" },
+    { id: "screens", label: "Screens" }, { id: "locker", label: "Locker" }, { id: "planning", label: "Planning" }
+  ];
+  const stats = {
+    total: (ds.screens || []).length, active: (ds.screens || []).filter(s => s.status === "active").length,
+    planned: (ds.screens || []).filter(s => s.status === "planned").length,
+    leads: (ds.leads || []).length, interested: (ds.leads || []).filter(l => l.stage === "Interested" || l.stage === "Negotiating").length,
+    closed: (ds.leads || []).filter(l => l.stage === "Closed").length,
+  };
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 4, marginBottom: 24, flexWrap: "wrap" }}>
+        {tabs.map(t => (
+          <button key={t.id} onClick={() => setTab(t.id)} style={{ padding: "7px 16px", borderRadius: 8, border: `1px solid ${tab === t.id ? G.accent : G.border}`, background: tab === t.id ? "rgba(200,240,77,.1)" : "transparent", color: tab === t.id ? G.accent : G.textSec, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'Syne',sans-serif" }}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+      {tab === "dashboard" && (
         <div>
-          <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:5px">${s.name}</div>
-          <span class="badge ${s.status}">${s.status}</span>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 10, marginBottom: 24 }}>
+            {[["Screens", stats.total], ["Active", stats.active, G.green], ["Planned", stats.planned, G.blue], ["Leads", stats.leads], ["Hot Leads", stats.interested, G.amber], ["Closed", stats.closed, G.accent]].map(([label, val, color]) => (
+              <div key={label} style={{ background: G.card, border: `1px solid ${G.border}`, borderRadius: 10, padding: "16px", textAlign: "center" }}>
+                <div style={{ fontSize: 28, fontWeight: 800, color: color || G.text }}>{val}</div>
+                <div style={{ fontSize: 11, color: G.textSec, marginTop: 4, fontWeight: 600, letterSpacing: .5 }}>{label.toUpperCase()}</div>
+              </div>
+            ))}
+          </div>
+          <Card>
+            <div style={{ fontWeight: 700, marginBottom: 16 }}>Recent Leads</div>
+            {(ds.leads || []).slice(0, 4).map(l => (
+              <div key={l.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: `1px solid ${G.border}` }}>
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 14 }}>{l.name}</div>
+                  <div style={{ fontSize: 12, color: G.textSec }}>{l.company}</div>
+                </div>
+                <LeadBadge stage={l.stage} />
+              </div>
+            ))}
+            {(ds.leads || []).length === 0 && <div style={{ fontSize: 13, color: G.textMuted, textAlign: "center", padding: 20 }}>No leads yet</div>}
+          </Card>
         </div>
-        <button class="btn-ghost" onclick="delScreen('${s.id}')">✕</button>
-      </div>
-      <div style="font-size:12px;color:var(--text3);line-height:1.8">${s.gym||'—'}<br>${s.loc||'—'}${s.date?`<br><span style="color:var(--text3)">${fd(s.date)}</span>`:''}</div>
-      ${s.notes?`<div style="font-size:12px;color:var(--text3);margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">${s.notes}</div>`:''}
-    </div>`).join('')}
-  </div>`:'<div class="empty"><p>No screens added yet.</p></div>'}`;
-}
-
-async function addScreen(){
-  const name=document.getElementById('sn').value.trim();if(!name)return;
-  const scrs=st.data.screens.screens||[];
-  scrs.push({id:uid(),name,gym:document.getElementById('sg').value,loc:document.getElementById('sl').value,status:document.getElementById('ss').value,date:document.getElementById('sd').value||null,notes:document.getElementById('snts').value,at:new Date().toISOString()});
-  await S.save('screens.screens',scrs);st.data=S.get();go('screens','screens');toast('Screen added','ok');
-}
-async function delScreen(id){
-  const scrs=st.data.screens.screens.filter(x=>x.id!==id);
-  await S.save('screens.screens',scrs);st.data=S.get();go('screens','screens');
-}
-
-function sLocker(){
-  const items=(st.data?.screens?.locker?.items)||[];
-  const types=['Note','Research','Business Idea'];
-  return`
-  <div class="g2">
-    <div class="card">
-      <div class="card-label">Add item</div>
-      <div class="field" style="margin-bottom:12px"><input class="inp grow" id="lkt" placeholder="Title…" style="width:100%"></div>
-      <textarea class="txa" id="lkb" placeholder="Content…" style="min-height:90px;margin-bottom:12px"></textarea>
-      <div style="display:flex;gap:10px;align-items:center">
-        <select class="sel" id="lktype" style="flex:1">${types.map(t=>`<option>${t}</option>`).join('')}</select>
-        <button class="btn" onclick="addLock()">Save</button>
-      </div>
+      )}
+      {tab === "leads" && <LeadsTab ds={ds} save={d => save({ ...data, disciplScreens: d })} />}
+      {tab === "screens" && <ScreensTab ds={ds} save={d => save({ ...data, disciplScreens: d })} />}
+      {tab === "locker" && <LockerTab ds={ds} save={d => save({ ...data, disciplScreens: d })} />}
+      {tab === "planning" && <PlanningTab ds={ds} save={d => save({ ...data, disciplScreens: d })} />}
     </div>
-    <div class="card">
-      <div class="card-label">Stored items <span style="color:var(--text3)">${items.length}</span></div>
-      ${items.length?items.map(i=>`
-      <div class="li">
-        <div class="li-body">
-          <div style="font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">${i.type}</div>
-          <div class="li-title">${i.title}</div>
-          <div style="font-size:12px;color:var(--text3);margin-top:3px;font-weight:300">${i.body||''}</div>
+  );
+}
+
+const STAGES = ["New", "Contacted", "Interested", "Negotiating", "Closed", "Rejected"];
+const stageColor = { New: "new", Contacted: "", Interested: "warn", Negotiating: "accent", Closed: "active", Rejected: "danger" };
+const LeadBadge = ({ stage }) => <span className={`tag ${stageColor[stage] || ""}`}>{stage}</span>;
+
+function LeadsTab({ ds, save }) {
+  const [modal, setModal] = useState(false); const [edit, setEdit] = useState(null); const [q, setQ] = useState("");
+  const empty = { name: "", company: "", phone: "", email: "", stage: "New", notes: "" };
+  const [form, setForm] = useState(empty);
+  const leads = ds.leads || [];
+  const filtered = leads.filter(l => !q || l.name?.toLowerCase().includes(q.toLowerCase()) || l.company?.toLowerCase().includes(q.toLowerCase()));
+
+  const submit = () => {
+    if (!form.name) return;
+    const updated = edit ? leads.map(l => l.id === edit ? { ...form, id: edit } : l) : [{ id: Date.now(), ...form, date: new Date().toLocaleDateString() }, ...leads];
+    save({ ...ds, leads: updated }); setModal(false); setEdit(null); setForm(empty);
+  };
+  const del = id => save({ ...ds, leads: leads.filter(l => l.id !== id) });
+  const openEdit = l => { setForm(l); setEdit(l.id); setModal(true); };
+
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
+        <input placeholder="Search leads..." value={q} onChange={e => setQ(e.target.value)} style={{ flex: 1 }} />
+        <Btn variant="accent" onClick={() => { setForm(empty); setEdit(null); setModal(true); }}>{icons.plus} Lead</Btn>
+      </div>
+      {filtered.length === 0 && <Empty msg="No leads yet. Start tracking!" />}
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {filtered.map(l => (
+          <Card key={l.id}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 15 }}>{l.name}</div>
+                <div style={{ fontSize: 13, color: G.textSec, marginTop: 2 }}>{l.company} {l.phone && `· ${l.phone}`}</div>
+                {l.notes && <p style={{ fontSize: 12, color: G.textMuted, marginTop: 6, maxWidth: 400 }}>{l.notes}</p>}
+              </div>
+              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                <LeadBadge stage={l.stage} />
+                <button onClick={() => openEdit(l)} style={{ background: "none", border: "none", color: G.textSec, cursor: "pointer", fontSize: 14 }}>{icons.edit}</button>
+                <button onClick={() => del(l.id)} style={{ background: "none", border: "none", color: G.textMuted, cursor: "pointer", fontSize: 14 }}>{icons.trash}</button>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+      {modal && (
+        <Modal title={edit ? "Edit Lead" : "New Lead"} onClose={() => { setModal(false); setEdit(null); setForm(empty); }}>
+          <Field label="Name"><input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Contact name" /></Field>
+          <Field label="Company"><input value={form.company} onChange={e => setForm({ ...form, company: e.target.value })} placeholder="Business name" /></Field>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <Field label="Phone"><input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder="+44..." /></Field>
+            <Field label="Email"><input value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="email@..." /></Field>
+          </div>
+          <Field label="Stage">
+            <select value={form.stage} onChange={e => setForm({ ...form, stage: e.target.value })}>
+              {STAGES.map(s => <option key={s}>{s}</option>)}
+            </select>
+          </Field>
+          <Field label="Notes"><textarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} placeholder="Notes..." rows={3} style={{ resize: "vertical" }} /></Field>
+          <Btn variant="accent" onClick={submit}>{icons.save} {edit ? "Update" : "Add"} Lead</Btn>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+const SCREEN_STATUS = ["Planned", "Active", "Maintenance", "Removed"];
+function ScreensTab({ ds, save }) {
+  const [modal, setModal] = useState(false); const [edit, setEdit] = useState(null);
+  const empty = { name: "", gym: "", location: "", status: "Planned", installed: "", notes: "" };
+  const [form, setForm] = useState(empty);
+  const screens = ds.screens || [];
+  const submit = () => {
+    if (!form.name) return;
+    const updated = edit ? screens.map(s => s.id === edit ? { ...form, id: edit } : s) : [{ id: Date.now(), ...form }, ...screens];
+    save({ ...ds, screens: updated }); setModal(false); setEdit(null); setForm(empty);
+  };
+  const del = id => save({ ...ds, screens: screens.filter(s => s.id !== id) });
+  const scColor = { Planned: "new", Active: "active", Maintenance: "warn", Removed: "danger" };
+
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 20 }}>
+        <Btn variant="accent" onClick={() => { setForm(empty); setEdit(null); setModal(true); }}>{icons.plus} Screen</Btn>
+      </div>
+      {screens.length === 0 && <Empty msg="No screens yet. Add your first installation!" />}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 12 }}>
+        {screens.map(s => (
+          <Card key={s.id}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
+              <span className={`tag ${scColor[s.status]}`}>{s.status}</span>
+              <div style={{ display: "flex", gap: 6 }}>
+                <button onClick={() => { setForm(s); setEdit(s.id); setModal(true); }} style={{ background: "none", border: "none", color: G.textSec, cursor: "pointer" }}>{icons.edit}</button>
+                <button onClick={() => del(s.id)} style={{ background: "none", border: "none", color: G.textMuted, cursor: "pointer" }}>{icons.trash}</button>
+              </div>
+            </div>
+            <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 4 }}>{s.name}</div>
+            <div style={{ fontSize: 13, color: G.textSec }}>{s.gym}</div>
+            <div style={{ fontSize: 12, color: G.textMuted, marginTop: 4 }}>{s.location}</div>
+            {s.installed && <div style={{ fontSize: 11, color: G.textMuted, marginTop: 8 }}>Installed: {s.installed}</div>}
+            {s.notes && <p style={{ fontSize: 12, color: G.textSec, marginTop: 8 }}>{s.notes}</p>}
+          </Card>
+        ))}
+      </div>
+      {modal && (
+        <Modal title={edit ? "Edit Screen" : "New Screen"} onClose={() => { setModal(false); setEdit(null); setForm(empty); }}>
+          <Field label="Screen Name"><input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Screen identifier" /></Field>
+          <Field label="Gym/Venue"><input value={form.gym} onChange={e => setForm({ ...form, gym: e.target.value })} placeholder="Gym name" /></Field>
+          <Field label="Location"><input value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} placeholder="City, area..." /></Field>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <Field label="Status">
+              <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })}>
+                {SCREEN_STATUS.map(s => <option key={s}>{s}</option>)}
+              </select>
+            </Field>
+            <Field label="Install Date"><input type="date" value={form.installed} onChange={e => setForm({ ...form, installed: e.target.value })} /></Field>
+          </div>
+          <Field label="Notes"><textarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} rows={3} style={{ resize: "vertical" }} /></Field>
+          <Btn variant="accent" onClick={submit}>{icons.save} {edit ? "Update" : "Add"} Screen</Btn>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+function LockerTab({ ds, save }) {
+  const [tab, setTab] = useState("notes"); const [modal, setModal] = useState(false);
+  const [form, setForm] = useState({ title: "", content: "" });
+  const locker = ds.locker || {};
+  const items = locker[tab] || [];
+  const add = () => {
+    if (!form.title) return;
+    save({ ...ds, locker: { ...locker, [tab]: [{ id: Date.now(), ...form, date: new Date().toLocaleDateString() }, ...items] } });
+    setModal(false); setForm({ title: "", content: "" });
+  };
+  const del = id => save({ ...ds, locker: { ...locker, [tab]: items.filter(i => i.id !== id) } });
+  const sections = [{ id: "notes", label: "Notes" }, { id: "research", label: "Research" }, { id: "businessIdeas", label: "Business Ideas" }];
+
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 4, marginBottom: 20 }}>
+        {sections.map(s => (
+          <button key={s.id} onClick={() => setTab(s.id)} style={{ padding: "6px 14px", borderRadius: 7, border: `1px solid ${tab === s.id ? G.blue : G.border}`, background: tab === s.id ? "rgba(77,159,255,.1)" : "transparent", color: tab === s.id ? G.blue : G.textSec, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'Syne',sans-serif" }}>
+            {s.label}
+          </button>
+        ))}
+        <Btn variant="accent" onClick={() => setModal(true)} style={{ marginLeft: "auto" }}>{icons.plus} Add</Btn>
+      </div>
+      {items.length === 0 && <Empty msg={`No ${tab} stored yet.`} />}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 10 }}>
+        {items.map(i => (
+          <Card key={i.id}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+              <div style={{ fontWeight: 700, fontSize: 14 }}>{i.title}</div>
+              <button onClick={() => del(i.id)} style={{ background: "none", border: "none", color: G.textMuted, cursor: "pointer" }}>{icons.trash}</button>
+            </div>
+            <p style={{ fontSize: 13, color: G.textSec, lineHeight: 1.6 }}>{i.content}</p>
+            <div style={{ fontSize: 11, color: G.textMuted, marginTop: 10 }}>{i.date}</div>
+          </Card>
+        ))}
+      </div>
+      {modal && (
+        <Modal title="Add to Locker" onClose={() => setModal(false)}>
+          <Field label="Title"><input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} /></Field>
+          <Field label="Content"><textarea value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} rows={4} style={{ resize: "vertical" }} /></Field>
+          <Btn variant="accent" onClick={add}>{icons.save} Save</Btn>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+function PlanningTab({ ds, save }) {
+  const [modal, setModal] = useState(false); const [tab, setTab] = useState("tasks");
+  const [form, setForm] = useState({ title: "", notes: "", done: false });
+  const board = ds.planningBoard || {};
+  const items = board[tab] || [];
+  const add = () => {
+    if (!form.title) return;
+    save({ ...ds, planningBoard: { ...board, [tab]: [{ id: Date.now(), ...form, date: new Date().toLocaleDateString() }, ...items] } });
+    setModal(false); setForm({ title: "", notes: "", done: false });
+  };
+  const toggle = id => save({ ...ds, planningBoard: { ...board, [tab]: items.map(i => i.id === id ? { ...i, done: !i.done } : i) } });
+  const del = id => save({ ...ds, planningBoard: { ...board, [tab]: items.filter(i => i.id !== id) } });
+  const sections = [{ id: "tasks", label: "Tasks" }, { id: "opportunities", label: "Opportunities" }, { id: "followUps", label: "Follow-ups" }];
+
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 4, marginBottom: 20 }}>
+        {sections.map(s => (
+          <button key={s.id} onClick={() => setTab(s.id)} style={{ padding: "6px 14px", borderRadius: 7, border: `1px solid ${tab === s.id ? G.purple : G.border}`, background: tab === s.id ? "rgba(160,132,240,.1)" : "transparent", color: tab === s.id ? G.purple : G.textSec, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'Syne',sans-serif" }}>
+            {s.label}
+          </button>
+        ))}
+        <Btn variant="accent" onClick={() => setModal(true)} style={{ marginLeft: "auto" }}>{icons.plus} Add</Btn>
+      </div>
+      {items.length === 0 && <Empty msg="Nothing here yet." />}
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {items.map(i => (
+          <div key={i.id} style={{ display: "flex", gap: 12, alignItems: "center", padding: "12px 16px", background: G.card, borderRadius: 9, border: `1px solid ${G.border}`, opacity: i.done ? .5 : 1 }}>
+            <div onClick={() => toggle(i.id)} style={{ width: 20, height: 20, borderRadius: 5, border: `2px solid ${i.done ? G.accent : G.border}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", background: i.done ? "rgba(200,240,77,.2)" : "transparent", color: G.accent, fontSize: 11, flexShrink: 0 }}>
+              {i.done ? icons.check : ""}
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 600, fontSize: 14, textDecoration: i.done ? "line-through" : "none" }}>{i.title}</div>
+              {i.notes && <div style={{ fontSize: 12, color: G.textSec, marginTop: 2 }}>{i.notes}</div>}
+            </div>
+            <button onClick={() => del(i.id)} style={{ background: "none", border: "none", color: G.textMuted, cursor: "pointer" }}>{icons.trash}</button>
+          </div>
+        ))}
+      </div>
+      {modal && (
+        <Modal title="Add Item" onClose={() => setModal(false)}>
+          <Field label="Title"><input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} /></Field>
+          <Field label="Notes"><textarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} rows={3} style={{ resize: "vertical" }} /></Field>
+          <Btn variant="accent" onClick={add}>{icons.save} Add</Btn>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+// ─── REGISTER MODULES ─────────────────────────────────────────────────────────
+registerModule({
+  id: "diary", label: "Diary", icon: icons.diary, color: G.accent,
+  description: "Brain · Planner · Goals · Journal · Vault",
+  component: DiaryModule
+});
+registerModule({
+  id: "disciplScreens", label: "Discipl Screens", icon: icons.screens, color: G.blue,
+  description: "Leads · Screens · Locker · Planning",
+  component: DisciplModule
+});
+registerModule({
+  id: "finance", label: "Finance", icon: icons.finance, color: G.green,
+  description: "Financial dashboard & tracking",
+  isLink: true, url: "https://lewinfin.vercel.app"
+});
+
+// ─── DASHBOARD ────────────────────────────────────────────────────────────────
+function Dashboard({ appData, onOpen, onQuickCapture, syncing }) {
+  const now = new Date();
+  const dateStr = now.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+  const tasks = appData?.diary?.planner?.tasks?.filter(t => !t.done) || [];
+  const leads = appData?.disciplScreens?.leads || [];
+  const captures = appData?.diary?.brain?.captures || [];
+
+  return (
+    <div className="fade-in">
+      <div style={{ marginBottom: 36 }}>
+        <div style={{ fontSize: 12, letterSpacing: 3, color: G.textMuted, fontWeight: 600, marginBottom: 8 }}>{dateStr.toUpperCase()}</div>
+        <div style={{ fontSize: 38, fontWeight: 800, letterSpacing: -1.5, lineHeight: 1.1 }}>
+          Good {now.getHours() < 12 ? "morning" : now.getHours() < 18 ? "afternoon" : "evening"}, <span style={{ color: G.accent }}>Lewin</span>
         </div>
-        <button class="btn-ghost" onclick="delLock('${i.id}')">✕</button>
-      </div>`).join(''):'<div class="empty"><p>Locker is empty.</p></div>'}
+        {syncing && <div style={{ fontSize: 12, color: G.textMuted, marginTop: 8, display: "flex", alignItems: "center", gap: 6 }}>
+          <span style={{ animation: "pulse 1.5s infinite", display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: G.accent }} />
+          Syncing...
+        </div>}
+      </div>
+
+      {/* Quick Stats */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: 10, marginBottom: 32 }}>
+        {[
+          ["Tasks", tasks.length, G.amber], ["Captures", captures.length, G.accent],
+          ["Leads", leads.length, G.blue], ["Screens", appData?.disciplScreens?.screens?.length || 0, G.green]
+        ].map(([label, val, color]) => (
+          <div key={label} style={{ background: G.surface, border: `1px solid ${G.border}`, borderRadius: 10, padding: "16px 14px", textAlign: "center" }}>
+            <div style={{ fontSize: 28, fontWeight: 800, color }}>{val}</div>
+            <div style={{ fontSize: 11, color: G.textSec, marginTop: 4, fontWeight: 600, letterSpacing: .5 }}>{label.toUpperCase()}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Modules */}
+      <div style={{ marginBottom: 12, fontSize: 12, color: G.textMuted, letterSpacing: 2, fontWeight: 600 }}>MODULES</div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 14, marginBottom: 32 }}>
+        {MODULE_REGISTRY.map(mod => (
+          <div key={mod.id} onClick={() => onOpen(mod)} style={{ background: G.card, border: `1px solid ${G.border}`, borderRadius: 14, padding: "24px", cursor: "pointer", transition: "all .2s", position: "relative", overflow: "hidden" }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = mod.color; e.currentTarget.style.transform = "translateY(-2px)"; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = G.border; e.currentTarget.style.transform = "translateY(0)"; }}>
+            <div style={{ fontSize: 28, marginBottom: 12, color: mod.color }}>{mod.icon}</div>
+            <div style={{ fontWeight: 800, fontSize: 17, marginBottom: 6 }}>{mod.label}</div>
+            <div style={{ fontSize: 12, color: G.textSec }}>{mod.description}</div>
+            {mod.isLink && <div style={{ fontSize: 11, color: G.textMuted, marginTop: 8 }}>↗ External app</div>}
+          </div>
+        ))}
+      </div>
+
+      {/* Today's Tasks */}
+      {tasks.length > 0 && (
+        <div style={{ marginBottom: 28 }}>
+          <div style={{ marginBottom: 12, fontSize: 12, color: G.textMuted, letterSpacing: 2, fontWeight: 600 }}>TODAY'S TASKS</div>
+          <Card>
+            {tasks.slice(0, 5).map(t => (
+              <div key={t.id} style={{ display: "flex", gap: 10, alignItems: "center", padding: "10px 0", borderBottom: `1px solid ${G.border}` }}>
+                <div style={{ width: 7, height: 7, borderRadius: "50%", background: t.priority === "high" ? G.red : t.priority === "medium" ? G.amber : G.green, flexShrink: 0 }} />
+                <span style={{ fontSize: 14, flex: 1 }}>{t.title}</span>
+                {t.due && <span style={{ fontSize: 11, color: G.textMuted }}>{t.due}</span>}
+              </div>
+            ))}
+            {tasks.length > 5 && <div style={{ fontSize: 12, color: G.textMuted, paddingTop: 10, textAlign: "center" }}>+{tasks.length - 5} more tasks</div>}
+          </Card>
+        </div>
+      )}
+
+      {/* Recent Captures */}
+      {captures.length > 0 && (
+        <div>
+          <div style={{ marginBottom: 12, fontSize: 12, color: G.textMuted, letterSpacing: 2, fontWeight: 600 }}>RECENT CAPTURES</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 10 }}>
+            {captures.slice(0, 3).map(c => (
+              <Card key={c.id}>
+                <span className="tag accent" style={{ fontSize: 10, marginBottom: 8, display: "inline-block" }}>{c.category}</span>
+                <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 4 }}>{c.title}</div>
+                <p style={{ fontSize: 12, color: G.textSec, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{c.content}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
-  </div>`;
+  );
 }
 
-async function addLock(){
-  const title=document.getElementById('lkt').value.trim();if(!title)return;
-  const items=st.data.screens.locker.items||[];
-  items.push({id:uid(),title,body:document.getElementById('lkb').value,type:document.getElementById('lktype').value,at:new Date().toISOString()});
-  await S.save('screens.locker.items',items);st.data=S.get();go('screens','locker');toast('Saved','ok');
-}
-async function delLock(id){
-  const items=st.data.screens.locker.items.filter(x=>x.id!==id);
-  await S.save('screens.locker.items',items);st.data=S.get();go('screens','locker');
-}
+// ─── MAIN APP ─────────────────────────────────────────────────────────────────
+export default function LewinOS() {
+  const [authed, setAuthed] = useState(() => localStorage.getItem("lewin_session") === "true");
+  const [appData, setAppData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
+  const [activeModule, setActiveModule] = useState(null);
+  const [search, setSearch] = useState("");
+  const [searchFocus, setSearchFocus] = useState(false);
 
-function sPlan(){
-  const p=st.data?.screens?.plan||{};
-  const tasks=p.tasks||[];const opps=p.opps||[];const fu=p.fu||[];
-  return`
-  <div class="card" style="margin-bottom:14px">
-    <div class="f-row">
-      <input class="inp grow" id="pt" placeholder="Item description…">
-      <select class="sel" id="ptype" style="width:150px">
-        <option value="tasks">Task</option>
-        <option value="opps">Opportunity</option>
-        <option value="fu">Follow-up</option>
-      </select>
-      <button class="btn" onclick="addPlan()">Add</button>
-    </div>
-  </div>
-  <div class="g3">
-    <div class="card">
-      <div class="card-label">Tasks <span style="color:var(--text3)">${tasks.length}</span></div>
-      ${tasks.map(t=>`<div class="li"><div class="cb ${t.done?'on':''}" onclick="tglPlan('${t.id}')"></div><div class="li-body"><div class="li-title" style="${t.done?'text-decoration:line-through;opacity:.35':''}">${t.text}</div></div><button class="btn-ghost" onclick="delPlan('tasks','${t.id}')">✕</button></div>`).join('')||'<div class="empty"><p>—</p></div>'}
-    </div>
-    <div class="card">
-      <div class="card-label">Opportunities <span style="color:var(--text3)">${opps.length}</span></div>
-      ${opps.map(o=>`<div class="li"><div class="li-body"><div class="li-title">${o.text}</div><div class="li-sub">${fd(o.at)}</div></div><button class="btn-ghost" onclick="delPlan('opps','${o.id}')">✕</button></div>`).join('')||'<div class="empty"><p>—</p></div>'}
-    </div>
-    <div class="card">
-      <div class="card-label">Follow-ups <span style="color:var(--text3)">${fu.length}</span></div>
-      ${fu.map(f=>`<div class="li"><div class="li-body"><div class="li-title">${f.text}</div><div class="li-sub">${fd(f.at)}</div></div><button class="btn-ghost" onclick="delPlan('fu','${f.id}')">✕</button></div>`).join('')||'<div class="empty"><p>—</p></div>'}
-    </div>
-  </div>`;
-}
+  useEffect(() => {
+    if (authed) {
+      StorageService.loadData().then(d => { setAppData(d); setLoading(false); });
+    } else { setLoading(false); }
+  }, [authed]);
 
-async function addPlan(){
-  const t=document.getElementById('pt').value.trim();if(!t)return;
-  const type=document.getElementById('ptype').value;
-  const p=st.data.screens.plan;p[type]=p[type]||[];
-  p[type].push({id:uid(),text:t,done:false,at:new Date().toISOString()});
-  await S.save('screens.plan',p);st.data=S.get();go('screens','plan');toast('Added','ok');
-}
-async function tglPlan(id){
-  const p=st.data.screens.plan;const t=p.tasks.find(x=>x.id===id);
-  if(t){t.done=!t.done;await S.save('screens.plan',p);st.data=S.get();go('screens','plan')}
-}
-async function delPlan(type,id){
-  const p=st.data.screens.plan;p[type]=p[type].filter(x=>x.id!==id);
-  await S.save('screens.plan',p);st.data=S.get();go('screens','plan');
-}
+  const saveData = useCallback(async (newData) => {
+    setAppData(newData); setSyncing(true);
+    await StorageService.saveData(newData);
+    setSyncing(false);
+  }, []);
 
-/* ── SEARCH FILTER ── */
-function flt(prefix,inputId){
-  const q=document.getElementById(inputId).value.toLowerCase();
-  document.querySelectorAll(`[id^="${prefix}"]`).forEach(el=>{el.style.display=el.textContent.toLowerCase().includes(q)?'':'none'});
-}
+  const handleLogin = (remember) => {
+    if (remember) localStorage.setItem("lewin_session", "true");
+    setAuthed(true);
+  };
 
-/* ── INIT ── */
-if(chkAuth())boot();else showLogin();
-</script>
-</body>
-</html>
+  const handleLogout = () => {
+    localStorage.removeItem("lewin_session");
+    setAuthed(false); setActiveModule(null);
+  };
+
+  const openModule = (mod) => {
+    if (mod.isLink) { window.open(mod.url, "_blank"); return; }
+    setActiveModule(mod);
+  };
+
+  const filteredModules = MODULE_REGISTRY.filter(m => m.label.toLowerCase().includes(search.toLowerCase()));
+
+  if (!authed) return <><style>{css}</style><LoginScreen onLogin={handleLogin} /></>;
+  if (loading) return (
+    <><style>{css}</style>
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: G.bg }}>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontSize: 36, fontWeight: 800, letterSpacing: -1.5, marginBottom: 16 }}>Lewin<span style={{ color: G.accent }}>OS</span></div>
+          <div style={{ fontSize: 13, color: G.textMuted }}>Loading your OS...</div>
+        </div>
+      </div>
+    </>
+  );
+
+  const ActiveComp = activeModule?.component;
+
+  return (
+    <>
+      <style>{css}</style>
+      <div style={{ minHeight: "100vh", background: G.bg }}>
+        {/* Sidebar */}
+        <div style={{ position: "fixed", left: 0, top: 0, bottom: 0, width: 220, background: G.surface, borderRight: `1px solid ${G.border}`, display: "flex", flexDirection: "column", zIndex: 100 }}>
+          <div style={{ padding: "24px 20px 20px", borderBottom: `1px solid ${G.border}` }}>
+            <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: -1 }}>Lewin<span style={{ color: G.accent }}>OS</span></div>
+            <div style={{ fontSize: 11, color: G.textMuted, marginTop: 3, letterSpacing: 1 }}>PERSONAL OS</div>
+          </div>
+          <nav style={{ flex: 1, padding: "16px 12px", overflowY: "auto" }}>
+            <button onClick={() => setActiveModule(null)} style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "10px 12px", borderRadius: 9, border: "none", background: !activeModule ? "rgba(200,240,77,.1)" : "transparent", color: !activeModule ? G.accent : G.textSec, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'Syne',sans-serif", marginBottom: 4 }}>
+              <span style={{ fontSize: 16 }}>{icons.home}</span> Dashboard
+            </button>
+            <div style={{ fontSize: 10, letterSpacing: 2, color: G.textMuted, padding: "12px 12px 6px", fontWeight: 600 }}>MODULES</div>
+            {MODULE_REGISTRY.map(mod => (
+              <button key={mod.id} onClick={() => openModule(mod)} style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "10px 12px", borderRadius: 9, border: "none", background: activeModule?.id === mod.id ? `rgba(${mod.color === G.accent ? "200,240,77" : mod.color === G.blue ? "77,159,255" : "77,255,145"},.1)` : "transparent", color: activeModule?.id === mod.id ? mod.color : G.textSec, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'Syne',sans-serif", marginBottom: 2 }}>
+                <span style={{ fontSize: 16, color: mod.color }}>{mod.icon}</span>
+                <span style={{ flex: 1, textAlign: "left" }}>{mod.label}</span>
+                {mod.isLink && <span style={{ fontSize: 10, opacity: .5 }}>↗</span>}
+              </button>
+            ))}
+          </nav>
+          <div style={{ padding: "16px 12px", borderTop: `1px solid ${G.border}` }}>
+            {syncing && <div style={{ fontSize: 11, color: G.textMuted, marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
+              <span style={{ animation: "pulse 1.5s infinite", display: "inline-block", width: 5, height: 5, borderRadius: "50%", background: G.accent }} /> Syncing
+            </div>}
+            <button onClick={handleLogout} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 12px", borderRadius: 8, border: "none", background: "transparent", color: G.textMuted, fontSize: 13, cursor: "pointer", fontFamily: "'Syne',sans-serif" }}>
+              ⊗ Sign out
+            </button>
+          </div>
+        </div>
+
+        {/* Main content */}
+        <div style={{ marginLeft: 220, minHeight: "100vh" }}>
+          {/* Top bar */}
+          <div style={{ position: "sticky", top: 0, background: `${G.bg}ee`, backdropFilter: "blur(12px)", borderBottom: `1px solid ${G.border}`, padding: "14px 32px", display: "flex", alignItems: "center", gap: 16, zIndex: 50 }}>
+            {activeModule && (
+              <button onClick={() => setActiveModule(null)} style={{ background: "none", border: "none", color: G.textSec, cursor: "pointer", fontSize: 18, padding: "2px 6px", borderRadius: 6 }}>{icons.back}</button>
+            )}
+            <div style={{ flex: 1, position: "relative" }}>
+              <div style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: G.textMuted, fontSize: 14 }}>{icons.search}</div>
+              <input placeholder="Search modules..." value={search} onChange={e => setSearch(e.target.value)} onFocus={() => setSearchFocus(true)} onBlur={() => setTimeout(() => setSearchFocus(false), 150)}
+                style={{ paddingLeft: 36, maxWidth: 320 }} />
+              {searchFocus && search && (
+                <div style={{ position: "absolute", top: "110%", left: 0, background: G.surface, border: `1px solid ${G.border}`, borderRadius: 10, overflow: "hidden", minWidth: 240, zIndex: 200 }}>
+                  {filteredModules.map(m => (
+                    <div key={m.id} onClick={() => { openModule(m); setSearch(""); }} style={{ padding: "12px 16px", cursor: "pointer", display: "flex", gap: 10, alignItems: "center" }}
+                      onMouseEnter={e => e.currentTarget.style.background = G.card}
+                      onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                      <span style={{ color: m.color }}>{m.icon}</span>
+                      <span style={{ fontSize: 14, fontWeight: 600 }}>{m.label}</span>
+                    </div>
+                  ))}
+                  {filteredModules.length === 0 && <div style={{ padding: "12px 16px", fontSize: 13, color: G.textMuted }}>No modules found</div>}
+                </div>
+              )}
+            </div>
+            {activeModule && (
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ color: activeModule.color, fontSize: 18 }}>{activeModule.icon}</span>
+                <span style={{ fontWeight: 700, fontSize: 16 }}>{activeModule.label}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Page */}
+          <div style={{ padding: "32px", maxWidth: 1100 }}>
+            {!activeModule && <Dashboard appData={appData} onOpen={openModule} syncing={syncing} />}
+            {activeModule && ActiveComp && (
+              <div className="fade-in">
+                <ActiveComp data={appData} save={saveData} />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
